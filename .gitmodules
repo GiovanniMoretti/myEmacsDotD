@@ -1,3 +1,6 @@
 [submodule "orgmode"]
 	path = orgmode
 	url = git://repo.or.cz/org-mode.git
+[submodule "hideshow"]
+	path = hideshow
+	url = git://github.com/secelis/hideshow-org.git
