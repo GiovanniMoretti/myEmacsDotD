@@ -1,0 +1,171 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>[Orgmode] Agenda is slow because of vc-mode</title>
+  <link rel="stylesheet" 
+href="Org-Agenda-Slow--DisableVC_files/main.css" media="screen">
+  <link rel="contents" 
+href="http://www.mail-archive.com/emacs-orgmode@gnu.org/index.html#25902">
+  <link rel="index" 
+href="http://www.mail-archive.com/emacs-orgmode@gnu.org/maillist.html#25902">
+  <link rel="prev" 
+href="http://www.mail-archive.com/emacs-orgmode@gnu.org/msg25901.html">
+  <link rel="next" 
+href="http://www.mail-archive.com/emacs-orgmode@gnu.org/msg25914.html">
+  <link rel="alternate" title="emacs-orgmode RSS" 
+href="http://www.mail-archive.com/emacs-orgmode@gnu.org/maillist.xml" 
+type="application/rss+xml">
+</head><body id="msg">
+<!--X-Body-Begin-->
+<!--X-User-Header-->
+<!--X-User-Header-End-->
+<!--X-TopPNI-->
+<div id="msgcontainer">
+	<a id="mail-archive-logo" href="http://www.mail-archive.com/"></a>
+<h1>
+	<span id="listlink"><a 
+href="http://www.mail-archive.com/emacs-orgmode@gnu.org/info.html">emacs-orgmode</a></span>
+  
+</h1>
+	<form action="http://www.mail-archive.com/search" method="get">
+		<ul id="topLinks">
+			<li><span class="msglink"><a 
+href="http://www.mail-archive.com/emacs-orgmode@gnu.org/msg25901.html" 
+accesskey="p" title="Earlier messages"><img 
+src="Org-Agenda-Slow--DisableVC_files/leftarrow.png" alt="left arrow" 
+align="top" border="0" height="22" width="20"></a></span> <span 
+class="threadlink"><a 
+href="http://www.mail-archive.com/emacs-orgmode@gnu.org/index.html#25902"
+ title="Messages by Thread" accesskey="c">Thread</a></span> <span 
+class="msglink"><a 
+href="http://www.mail-archive.com/emacs-orgmode@gnu.org/msg25914.html" 
+accesskey="n" title="Later messages"><img 
+src="Org-Agenda-Slow--DisableVC_files/rightarrow.png" alt="right arrow" 
+align="top" border="0" height="22" width="20"></a></span></li>
+			<li><span class="msglink"><a 
+href="http://www.mail-archive.com/emacs-orgmode@gnu.org/msg25901.html" 
+accesskey="b" title="Earlier messages"><img 
+src="Org-Agenda-Slow--DisableVC_files/leftarrow.png" alt="left arrow" 
+align="top" border="0" height="22" width="20"></a></span> <span 
+class="chronologicallink"><a 
+href="http://www.mail-archive.com/emacs-orgmode@gnu.org/maillist.html#25902"
+ title="Messages by Date" accesskey="i">Date</a></span> <span 
+class="msglink"><a 
+href="http://www.mail-archive.com/emacs-orgmode@gnu.org/msg25903.html" 
+accesskey="f" title="Later messages"><img 
+src="Org-Agenda-Slow--DisableVC_files/rightarrow.png" alt="right arrow" 
+align="top" border="0" height="22" width="20"></a></span></li>
+			<li>
+				<label>
+<input name="q" size="25" type="text">
+<input name="l" value="emacs-orgmode@gnu.org" type="hidden">
+<input value="Search" type="submit">
+</label>
+			</li>
+		</ul>
+	</form>
+</div>
+
+<div id="msgcontainer2">
+	<div id="corner1"></div>
+	<div id="corner2"></div>
+	<div id="msgcontent">
+
+<!--X-TopPNI-End-->
+<!--X-MsgBody-->
+<!--X-Subject-Header-Begin-->
+		<div class="msgHead">
+			<h1><span class="subject">[Orgmode] Agenda is slow because of vc-mode</span></h1>
+			<p><span class="sender">Daniel Clemente</span><br>
+			<span class="date">Mon, 07 Jun 2010 05:25:41 -0700</span></p>
+		</div>
+<!--X-Subject-Header-End-->
+<!--X-Head-of-Message-->
+<!--X-Head-of-Message-End-->
+<!--X-Head-Body-Sep-Begin-->
+<div class="msgBody">
+<!--X-Head-Body-Sep-End-->
+<!--X-Body-of-Message-->
+<pre>Hi.
+
+  I have a shell script which exports my agenda to a file. It's pretty
+slow: about 90 seconds. There are many files (200 .org files, 76k
+lines, 3'6 Mb, 1600 open tasks) but the performance should be better.
+  I found a way to bring it down to 11 seconds: temporarily disable
+the version control tools I'm using (bazaar, git). To test, just
+change their names so that Emacs can't run them.
+
+  Since this slowness is caused by vc-mode, I wonder if it's possible
+for Org to open the agenda files without enabling vc-mode, for vc-mode
+is not necessary for org-mode.
+  I fear not, because org-agenda-get-day-entries uses
+org-get-agenda-file-buffer to open a buffer normally, and this buffer
+should be fully functional for later usage.
+
+  As a hack, I used (defun vc-find-file-hook () nil) in my script;
+this does the trick.
+
+  Greetings,
+
+Daniel
+
+_______________________________________________
+Emacs-orgmode mailing list
+Please use `Reply All' to send replies to the list.
+Emacs-orgmode@gnu.org
+<a rel="nofollow" href="http://lists.gnu.org/mailman/listinfo/emacs-orgmode">http://lists.gnu.org/mailman/listinfo/emacs-orgmode</a>
+</pre>
+<!--X-Body-of-Message-End-->
+<!--X-MsgBody-End-->
+<!--X-Follow-Ups-->
+</div> <!-- end of msgBody class -->
+
+<div id="adbox">
+</div>
+
+<div class="tSliceList">
+<ul>
+<li>
+<div class="tSliceCur">
+<span class="subject">[Orgmode] Agenda is slow because of vc-mode</span>
+<span class="sender">Daniel Clemente</span>
+</div> <!-- end of tSliceCur class -->
+</li></ul>
+
+</div> <!-- end of tSliceList class -->
+<!--X-Follow-Ups-End-->
+<!--X-References-->
+<!--X-References-End-->
+<!--X-BotPNI-->
+  <ul id="botLinks">
+  <li><div class="reply">
+<form method="POST" action="http://www.mail-archive.com/mailto.php">
+
+
+<input name="subject" value="[Orgmode] Agenda is slow because of 
+vc-mode" type="HIDDEN">
+<input name="msgid" 
+value="AANLkTilQeIxPEi2xsDZluGK1V3aBwT1FoRo3OGeZChQS@mail.gmail.com" 
+type="HIDDEN">
+Reply via email to<br>
+<input value=" Daniel Clemente " type="SUBMIT">
+</form>
+</div>
+  </li>
+  </ul>
+
+<!--X-BotPNI-End-->
+<!--X-User-Footer-->
+<!--X-User-Footer-End-->
+</div> <!-- end of msgcontent class -->
+</div> <!-- end of msgcontainer2 class -->
+
+<!-- These extra divs/spans may be used as catch-alls to add extra imagery. -->
+<div id="extraDiv1"><span></span></div><div id="extraDiv2"><span></span></div><div
+ id="extraDiv3"><span></span></div>
+<div id="extraDiv4"><span></span></div><div id="extraDiv5"><span></span></div><div
+ id="extraDiv6"><span></span></div>
+
+</body></html>

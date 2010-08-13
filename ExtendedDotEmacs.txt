@@ -1,0 +1,368 @@
+;; From http://brad.theworthens.org/blog/2008/11/18/my-emacs-file
+;;
+;; My .emacs
+;; Time-stamp: <2008-11-28 20:14:23 brad@macbook-wireless .emacs>
+
+;; Good .emacs references
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; http://www.emacswiki.org/emacs/InitFile
+
+;; General Settings
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(add-to-list 'load-path "~/.emacs.d")   ; My lisp files
+(fset 'yes-or-no-p 'y-or-n-p)           ; Tired of typing 'yes'
+(setq inhibit-startup-message t)        ; No startup screen
+(global-font-lock-mode t)        	; Color syntax highlighting
+(setq font-lock-maximum-decoration t)   ; Color as much as possible
+(auto-compression-mode t)               ; Handle compressed files easily
+
+;; Backup/Autosave
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; (orig. from http://jaderholm.com/configs/emacs)
+; This will keep all backup/autosafe files in one location - much cleaner.
+(defvar backup-dir (expand-file-name "~/.emacs.d/.emacs.backup/"))
+(defvar autosave-dir (expand-file-name "~/.emacs.d/.emacs.autosave/"))
+(setq backup-directory-alist (list (cons ".*" backup-dir)))
+(setq auto-save-list-file-prefix autosave-dir)
+(setq auto-save-file-name-transforms `((".*" ,autosave-dir t)))
+
+;; Org-mode
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Load my own version (instead of site version)
+(add-to-list 'load-path "~/.emacs.d/org-mode/lisp")
+(require 'org-install)
+
+; Associate org-mode w/.org files
+(add-to-list 'auto-mode-alist '("\\.org$" . org-mode)) 
+
+; Easily follow links (i.e. no mouse)
+(setq org-return-follows-link t)
+
+; Let me get to some org commands from anywhere
+(define-key global-map "\C-cl" 'org-store-link)
+(define-key global-map "\C-ca" 'org-agenda)
+
+; Track state changes
+(setq org-log-done t)
+; I like to always track, but you can set this per file,
+; See docs section 6.5.2:
+; Very likely you do not want this verbose tracking all the time, so
+; it is probably better to configure this behavior with in-buffer
+; options. For example, if you are tracking purchases, put these into
+; a separate file that starts with:
+;     #+SEQ_TODO: TODO ORDERED INVOICE PAYED RECEIVED SENT
+;     #+Startup: lognotestate
+
+; Set default TODO states, basic
+;(setq org-todo-keywords '("TODO" "NEXT" "STARTED" "WAIT" "DONE"))   
+
+; Set default TODO states, with fast selection and state tracking
+; from http://article.gmane.org/gmane.emacs.orgmode/6082
+(setq org-use-fast-todo-selection t)
+(setq org-todo-keywords
+       '((sequence "TODO(t!/!)" "NEXT(n)" "|" "DONE(d!/!)")
+ 	(sequence "WAITING(w@/!)" "|" "CANCELLED(c!/!)")
+ 	(sequence "SOMEDAY(S!/!)" "|")
+ 	(sequence "STARTED(s!/!)" "|")
+ 	(sequence "DELEGATED(D@/!)" "|")
+ 	(sequence "OPEN(O!)" "|" "CLOSED(C!)")
+ 	(sequence "ONGOING(o)" "|")))
+; above keyword definitions requires org-log-done or similar set in
+; file, see further above
+
+; Can I set it to require a comment coming out of a state? e.g. SOMEDAY(S@!/@!)
+
+; Pretty up my keywords
+(setq org-todo-keyword-faces
+      '(("TODO"  . (:foreground "red" :weight bold))
+ 	("NEXT"  . (:foreground "red" :weight bold))
+ 	("DONE"  . (:foreground "forest green" :weight bold))
+ 	("STARTED"  . (:foreground "purple" :weight bold))
+ 	("WAITING"  . (:foreground "orange" :weight bold))
+ 	("DELEGATED"  . (:foreground "orange" :weight bold))
+ 	("CANCELLED"  . (:foreground "forest green" :weight bold))
+ 	("SOMEDAY"  . (:foreground "blue" :weight bold))
+ 	("OPEN"  . (:foreground "red" :weight bold))
+ 	("CLOSED"  . (:foreground "forest green" :weight bold))
+ 	("ONGOING"  . (:foreground "orange" :weight bold))))
+
+; Default agenda file locations
+(load-library "find-lisp")
+(setq org-agenda-files (find-lisp-find-files "~/org" "\.org")) 
+
+; Misc agenda settings
+(setq org-deadline-warning-days 8)      ; Don't warn me too far out
+(setq org-agenda-include-diary t)       ; show diary entries
+
+; highlight current item in agenda mode
+(add-hook 'org-agenda-mode-hook '(lambda () (hl-line-mode t)))  
+
+; Don't show done tasks in agenda
+(setq org-agenda-skip-scheduled-if-done t)
+(setq org-agenda-skip-deadline-if-done t)
+
+; Exclude scheduled items from the global TODO list.
+(setq org-agenda-todo-ignore-scheduled t)
+
+; Following three functions are to switch between two org-agenda-files
+; lists, so I can have home and work in separate places.  I don't
+; want to have to tag everything as home/work.  Maybe someday.
+
+(defun gohome ()
+  (interactive)
+;  (setq org-agenda-files (file-expand-wildcards "~/org/*.org"))
+  (setq org-agenda-files (find-lisp-find-files "~/org/home" "\.org"))   ; recurse down
+)
+
+(defun gowork ()
+  (interactive)
+ (setq org-agenda-files (find-lisp-find-files "~/org/work" "\.org"))
+)
+
+(defun goall ()
+  (interactive)
+  (setq org-agenda-files (find-lisp-find-files "~/org" "\.org"))
+)
+
+; Keep clocks running across sessions
+; As of Org version 6.11, clock-related data can be saved and resumed
+; across Emacs sessions The data saved include the contents of
+; `org-clock-history', and the running clock, if there is one. (From
+; release notes)
+(setq org-clock-persist t)
+(setq org-clock-in-resume t)
+(org-clock-persistence-insinuate)
+
+; Make it easy to open my org files.
+; plan.org just has links to frequently-used .org files.
+(defun plan ()
+   (interactive)
+   (find-file "~/org/plan.org")
+)
+(global-set-key (kbd "C-c p") 'plan)   
+
+; Tags I use (but I don't tag much), others are generally per-file.
+(setq org-tag-alist '(
+		      ("perl" .?p)
+		      ("buy" .?b)
+		      ("solaris" .?s)
+		      ("unix" .?u)
+		      ("emacs" .?e)
+		      ("org-mode" .?o)
+
+))
+
+; http://www.gnu.org/software/emacs/manual/html_node/org/Remember-templates.html
+; http://sachachua.com/wp/2007/12/28/emacs-getting-things-done-with-org-basic/
+; http://members.optusnet.com.au/~charles57/GTD/remember.html
+(setq org-remember-templates '(
+	("Tasks" ?t "* TODO %?\n  %U\n" "~/org/Remember.org" "Tasks")
+	("WorkTODO" ?w "* TODO %?\n  %U\n" "~/org/work/IBM.org" "Remembered Tasks")
+	("Link" ?l "* %?\n  %i\n  %a" "~/org/Remember.org" "Links")
+	("Stuff" ?s "* %?\n  %i\n  %U" "~/org/Remember.org" "Stuff")
+        ("Appointments" ?a "* Appointment: %?\n%^T\n%i\n  %a" "~/org/Remember.org")
+        ("Journal" ?j "* %U %?\n\n  %i" "~/org/Journal.org")
+        ("Idea" ?i "* %^{Title}\n  %i\n  %a" "~/org/Remember.org" "New Ideas")
+        ("EmacsTip" ?e "* %?\n  %i\n" "~/org/EmacsTips.org")
+))
+
+; Below to hook the templates into remember
+(setq remember-annotation-functions '(org-remember-annotation))
+(setq remember-handler-functions '(org-remember-handler))
+(eval-after-load 'remember
+  '(add-hook 'remember-mode-hook 'org-remember-apply-template))
+
+(global-set-key (kbd "C-c r") 'remember)    ; get to remember from anywhere
+
+; Set footnote-prefix in footnote.el to C-c F to not stomp org mode
+; Had to set this in my own site footnote.el file, actually.  Gotta
+; find out why I can't remap here.
+;(defvar footnote-prefix [(control ?c) ?F]
+;  "*When not using message mode, the prefix to bind in `mode-specific-map'")
+
+; http://orgmode.org/worg/org-hacks.php#sec-9
+; Remove time grid lines that are in an appointment
+
+;(defun org-time-to-minutes (time)
+;  "Convert an HHMM time to minutes"
+;  (+ (* (/ time 100) 60) (% time 100)))
+;(defun org-time-from-minutes (minutes)
+;  "Convert a number of minutes to an HHMM time"
+;  (+ (* (/ minutes 60) 100) (% minutes 60)))
+;(defadvice org-agenda-add-time-grid-maybe (around mde-org-agenda-grid-tweakify
+;                                                  (list ndays todayp))
+;  (if (member 'remove-match (car org-agenda-time-grid))
+;      (flet ((extract-window
+;              (line)
+;              (let ((start (get-text-property 1 'time-of-day line))
+;                    (dur (get-text-property 1 'duration line)))
+;                (cond
+;                 ((and start dur)
+;                  (cons start
+;                        (org-time-from-minutes
+;                         (+ dur (org-time-to-minutes start)))))
+;                 (start start)
+;                 (t nil)))))
+;        (let* ((windows (delq nil (mapcar 'extract-window list)))
+;               (org-agenda-time-grid
+;                (list (car org-agenda-time-grid)
+;                      (cadr org-agenda-time-grid)
+;                      (remove-if
+;                       (lambda (time)
+;                         (find-if (lambda (w)
+;                                    (if (numberp w)
+;                                        (equal w time)
+;                                      (and (>= time (car w))
+;                                           (< time (cdr w)))))
+;                                  windows))
+;                       (caddr org-agenda-time-grid)))))
+;          ad-do-it))
+;    ad-do-it))
+;(ad-activate 'org-agenda-add-time-grid-maybe)
+
+;; Remember mode
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Make sure we have it
+(add-to-list 'load-path "~/.emacs.d/remember")
+(require 'remember)
+
+;; Git
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Commit org files to git repository after save
+
+(defun git-commit ()
+  (when (or
+	 (eq major-mode 'org-mode)
+;	 (eq major-mode 'cperl-mode)
+;	 (eq major-mode 'sh-mode)
+	 (eq major-mode 'emacs-lisp-mode))
+    (shell-command "git commit -a -m 'Auto commit.'")))
+; Set a name for each revision, maybe just the date?
+
+(add-hook 'after-save-hook 'git-commit)
+
+;; Diary
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Sort my diary entries nicely while I'm at it (calendar mode, which I
+; rarely use.  But it sounded cool.  :)
+; http://www.emacswiki.org/cgi-bin/wiki/DiaryMode
+(add-hook 'list-diary-entries-hook 'sort-diary-entries t)
+
+;; weblogger.el, easy posting to wordpress
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(add-to-list 'load-path "~/.emacs.d/weblogger")
+(require 'weblogger)
+
+;; Misc little functions
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; easy-open .emacs
+(defun myemacs ()
+  (interactive)
+  (find-file "~/.emacs.d/init.el"))
+(defun doemacs ()
+  (interactive)
+  (load-file "~/.emacs.d/init.el"))
+
+; I use an org remember template now, so this is lonely...
+(defun journal ()
+  (interactive)
+  (find-file "~/Documents/books/journal.txt")
+  (end-of-buffer)
+  (insert "\n\n")
+  (insert "*")
+  (insert-time)
+  (insert "\n\n"))
+
+;; writeroom
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Just for Aquamacs at home, low-distraction style
+(defun writeroom ()
+  "Switches to a WriteRoom-like fullscreen style"
+  (interactive)
+  (when (featurep 'aquamacs)
+					; switch to Garamond 36pt
+    (set-frame-font "-apple-garamond-medium-r-normal--18-180-72-72-m-360-iso10646-1")
+					; switch to white on black
+    (color-theme-initialize)
+    (color-theme-clarity)
+					; switch to fullscreen mode
+    (aquamacs-toggle-full-frame)))
+
+;; fill-buffer
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;http://www.dotfiles.com/files/6/409_.emacs_1
+(defun fill-buffer ()
+  "Fill each of the paragraphs in the buffer."
+  (interactive)
+  (let ((beg (point-min))
+	(end (point-max)))
+    (fill-region beg end)))
+
+;; timestamper
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Really, what I want is to make this mode-sensitive.  So, if in
+; emacs-lisp, do ;comment, in perl do #, in html blah blah
+
+(defun insert-date-time ()
+ (interactive)
+  (insert (format-time-string "#@%Y-%m-%d %H:%M:%S "))
+  (insert (user-login-name))  (insert "@")
+  (insert (system-name))
+)
+(global-set-key "\C-ct" 'insert-date-time)  ; C-c 'time'
+
+(defun insert-time-only ()
+ (interactive)
+  (insert (format-time-string "%H:%M:%S "))
+)
+(global-set-key "\C-cn" 'insert-time-only)   ; C-c 'now'
+
+;; Time-stamp hook, autotimestamp files
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(setq time-stamp-format "%:y-%02m-%02d %02H:%02M:%02S %u@%s %f")
+(add-hook 'write-file-hooks 'time-stamp)
+(setq time-stamp-line-limit 16)
+
+; And insert stamp hook where I want it
+(defun stamp ()
+  "Insert Time-stamp hook at point."
+  (interactive "*")
+  (insert "Time-stamp: <>")
+  (time-stamp)
+  )
+
+;; Bcrypt open file
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun open-encrypted-file (fname)
+  (interactive "FFind file: n")
+  (let ((buf (create-file-buffer fname)))
+    (shell-command
+     (concat "echo " (read-passwd "Decrypt password: ") " | bcrypt -o " fname)
+     buf)
+    (set-buffer buf)
+    (kill-line)(kill-line)
+    (toggle-read-only)
+    (not-modified))
+  )
+
+;; epg stuff (gpg for Emacs)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(add-to-list 'load-path "~/.emacs.d/epg")
+(require 'epa-setup)
+; M-x epa- to browse options
+
+; transparent, automatic encryption
+(epa-file-enable)
+
+;; w3m
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; http://emacs-w3m.namazu.org/
+(add-to-list 'load-path "~/.emacs.d/emacs-w3m")
+(require 'w3m-load)
+(setq w3m-use-cookies t)   
+
+;; emacsserver
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(server-start)

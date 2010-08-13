@@ -1,0 +1,10 @@
+/* Effective stylesheet produced by snapshot save */
+body { font-family: Palatino,"Book Antiqua","URW Palladio L",serif; font-size: 14px; }
+pre { padding: 10px; font-family: Inconsolata,Consolas,monospace; background-color: rgb(204, 204, 204); overflow-x: auto; }
+a { text-decoration: none; }
+a:hover { text-decoration: underline; }
+strong { background-color: rgb(204, 204, 204); }
+#header { margin: 30px 0pt; }
+#related { margin-top: 20px; }
+.no-bullets { margin: 0pt; list-style-type: none; }
+.screenshot { margin-top: 20px; }

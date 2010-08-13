@@ -1,0 +1,70 @@
+/* Effective stylesheet produced by snapshot save */
+body { margin: 0pt; padding: 0pt; background-color: rgb(255, 255, 255); color: rgb(0, 0, 0); font-family: verdana,arial,sans-serif; }
+#logo { float: left; left: 184px; top: 0pt; margin: 0pt; padding: 0pt; }
+#logo2 { position: absolute; left: 184px; top: 0pt; }
+#logo-explain { position: absolute; left: 405px; top: 30px; font-size: 80%; }
+.fineprint { font-size: 70%; }
+.statbox { font-size: 80%; border: 2px solid rgb(205, 150, 133); width: 30em; padding: 5px; }
+.stattitle { font-size: 120%; font-weight: bold; color: rgb(0, 103, 146); text-align: center; }
+.statbox form, .statbox p { text-align: center; }
+.statname, .statbox li { width: 18em; float: left; }
+.statcount { float: right; }
+.statbottom { clear: both; }
+#mainimage { float: left; left: 0pt; top: 0pt; width: 184px; height: 322px; background-repeat: no-repeat; z-index: 10; }
+#welcomepage #mainimage, #notfound #mainimage { background-image: url("image-welcome.jpg"); }
+#container { background-repeat: repeat-x; margin-bottom: 2em; }
+#welcomepage #container, #notfound #container { background-image: url("base-welcome.png"); }
+#container2 { background-repeat: no-repeat; background-position: 100% 0pt; }
+#welcomepage #container2 { background-image: url("right-welcome.jpg"); }
+#notfound #container2 { background-image: url("right-404.jpg"); }
+#container2 h1 { position: absolute; left: 0pt; top: 0pt; color: rgb(0, 0, 0); margin: 0pt; padding: 0pt; width: 184px; z-index: 1; font-family: verdana,arial,sans-serif; }
+#msgcontainer { background-repeat: repeat-x; background-position: 100% 0pt; min-width: 68em; font-family: monospace; }
+#msg #msgcontainer { background-image: url("msg-no-logo.png"); background-color: rgb(232, 226, 219); }
+#thread #msgcontainer { background-image: url("thread-no-logo.png"); background-color: rgb(224, 224, 227); }
+#cron #msgcontainer, #infopg #msgcontainer { background-image: url("cron-no-logo.png"); background-color: rgb(214, 234, 230); }
+#msgcontainer h1 { color: rgb(180, 42, 0); font-weight: normal; margin: 0pt; padding: 15px 0pt 0pt 20px; }
+.msgHead { color: rgb(0, 103, 146); }
+.msgBody { float: left; width: 75%; }
+#topLinks, #botLinks { margin: 0pt; padding: 25px 0pt 5px 20px; list-style-type: none; }
+#topLinks li, #botLinks li { display: inline; margin-right: 50px; font-family: verdana,arial,sans-serif; }
+#msgcontainer2 { background-repeat: repeat-x; background-color: rgb(255, 255, 255); margin-bottom: 2em; }
+#msg #msgcontainer2 { background-image: url("msg-top2.png"); height: 5px; min-width: 68em; font-family: monospace; }
+#thread #msgcontainer2 { background-image: url("thread-top2.png"); font-size: 80%; }
+#cron #msgcontainer2, #infopg #msgcontainer2 { background-image: url("cron-top2.png"); font-size: 80%; }
+#corner2 { float: left; width: 48px; height: 232px; }
+#msg #corner2 { background-image: url("msg-left.jpg"); }
+#thread #corner2 { background-image: url("thread-left.jpg"); }
+#cron #corner2, #infopg #corner2 { background-image: url("cron-left.jpg"); }
+#msgcontent, #indexcontent { margin: 0px 16px 0px 48px; }
+#msgcontent h1, #msgcontent h2 { margin: 0pt; padding: 1em 0pt 0pt; font-size: 140%; }
+#indexcontent h2 { margin: 0pt; padding: 1em 0pt 0pt; }
+#indexcontent li { list-style: none outside none; }
+#indexcontent a:visited { color: rgb(0, 0, 0); }
+.tSliceList { clear: left; margin: 2em 0pt; padding: 1em; background-color: rgb(233, 225, 212); font-size: 90%; font-family: verdana,arial,sans-serif; }
+.tSliceList ul { margin-left: 0pt; padding-left: 2em; list-style-type: none; }
+.tSliceCur .subject { color: rgb(206, 150, 132); }
+.sliceCur .subject { color: rgb(206, 150, 132); }
+#adbox { float: right; width: 160px; background-color: rgb(255, 255, 255); padding: 0px 0pt 20px 20px; margin-top: 10px; }
+a#mail-archive-logo { float: right; display: block; width: 178px; height: 23px; margin-top: 16px; margin-right: 32px; background-image: url("mail-archive.png"); background-repeat: no-repeat; }
+#msgcontainer > a#mail-archive-logo { margin-right: 65px; }
+form { margin: 0pt; padding: 0pt; }
+dt { font-weight: bold; margin: 1em 0pt; }
+dd { margin-left: 0pt; padding-left: 0pt; }
+#content { margin: 0pt 170px 0pt 184px; padding-top: 155px; line-height: 140%; }
+h2, h3, h4, h5, h6 { color: rgb(0, 103, 146); margin-top: 0pt; }
+h2 { font-size: 140%; }
+h3 { font-size: 120%; }
+h4, h5, h6 { font-size: 100%; }
+p { margin-top: 0pt; }
+#cron #listlink, #cron #listlink a:link, #cron #listlink a:visited, #thread #listlink, #thread #listlink a:link, #thread #listlink a:visited, #msg #listlink, #msg #listlink a:link, #msg #listlink a:visited { color: rgb(180, 42, 0); text-decoration: underline; background-color: transparent; }
+#listlink, #listlink a:link, #listlink a:visited { color: rgb(180, 42, 0); text-decoration: none; background-color: transparent; }
+#msglink a:visited, #msglist a:visited { color: rgb(0, 0, 0); }
+a:link { color: rgb(0, 103, 146); }
+a:hover, a:active, a:visited { color: rgb(0, 0, 0); }
+hr { color: rgb(205, 150, 133); background: none repeat scroll 0% 0% rgb(255, 255, 255); border: 0pt none; height: 2px; }
+.subject { font-weight: bold; padding-right: 10px; }
+.date { color: rgb(136, 136, 136); padding-right: 10px; }
+.sender { font-style: italic; }
+.subtle { color: rgb(136, 136, 136); padding-left: 10px; font-size: 80%; }
+.infoheader { font-weight: bold; float: left; width: 15em; }
+.infobody { float: left; width: 40em; }

@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" lang="en-us"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+  
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+    <title>Comment stuff in Emacs</title>
+
+    <link rel="stylesheet" href="comment-stuff-in-in-emacs_files/syntax.css" type="text/css" media="screen">
+    <link rel="stylesheet" href="comment-stuff-in-in-emacs_files/reset.css" type="text/css" media="screen, projection">
+    <link rel="stylesheet" href="comment-stuff-in-in-emacs_files/typography.css" type="text/css" media="screen, projection">
+    <link rel="stylesheet" href="comment-stuff-in-in-emacs_files/grid.css" type="text/css" media="screen, projection">
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="/stylesheets/blueprint/ie.css" type="text/css" media="screen, projection" />
+    <![endif]-->
+    <link rel="stylesheet" href="comment-stuff-in-in-emacs_files/application.css" type="text/css" media="screen">
+
+    <link href="http://feeds.feedburner.com/tuxicity" rel="alternate" title="Tuxicity" type="application/atom+xml">
+    <link href="http://feeds.feedburner.com/tuxicity-emacs" rel="alternate" title="Tuxicity Emacs" type="application/atom+xml">
+    <link href="http://feeds.feedburner.com/tuxicity-rails" rel="alternate" title="Tuxicity Rails" type="application/atom+xml">
+
+    <script type="text/javascript"><!--
+/* Script removed by snapshot save */
+--></script>
+    <script type="text/javascript"><!--
+/* Script removed by snapshot save */
+--></script>
+  </head><body>
+    <div class="container">
+      <div class="span-24 last" id="header">
+        <a href="http://blog.tuxicity.se/">
+          <img src="comment-stuff-in-in-emacs_files/logo.png">
+        </a>
+      </div>
+
+      <div class="span-24 last">
+        <h1>Comment stuff in Emacs</h1>
+
+<p>I find myself commenting a lot of stuff, so I made this little helper
+function that either comments or uncomments the current line (if no
+region is selected) or all lines in the selected region.</p>
+
+<div class="highlight"><pre><code class="scheme"><span class="p">(</span><span class="nf">defun</span> <span class="nv">comment-or-uncomment-current-line-or-region</span> <span class="p">()</span>
+  <span class="s">"Comments or uncomments current current line or whole lines in region."</span>
+  <span class="p">(</span><span class="nf">interactive</span><span class="p">)</span>
+  <span class="p">(</span><span class="nf">save-excursion</span>
+    <span class="p">(</span><span class="k">let </span><span class="p">(</span><span class="nb">min </span><span class="nv">max</span><span class="p">)</span>
+      <span class="p">(</span><span class="k">if </span><span class="p">(</span><span class="nf">region-active-p</span><span class="p">)</span>
+          <span class="p">(</span><span class="nf">setq</span> <span class="nv">min</span> <span class="p">(</span><span class="nf">region-beginning</span><span class="p">)</span> <span class="nv">max</span> <span class="p">(</span><span class="nf">region-end</span><span class="p">))</span>
+        <span class="p">(</span><span class="nf">setq</span> <span class="nv">min</span> <span class="p">(</span><span class="nf">point</span><span class="p">)</span> <span class="nv">max</span> <span class="p">(</span><span class="nf">point</span><span class="p">)))</span>
+      <span class="p">(</span><span class="nf">comment-or-uncomment-region</span>
+       <span class="p">(</span><span class="nf">progn</span> <span class="p">(</span><span class="nf">goto-char</span> <span class="nv">min</span><span class="p">)</span> <span class="p">(</span><span class="nf">line-beginning-position</span><span class="p">))</span>
+       <span class="p">(</span><span class="nf">progn</span> <span class="p">(</span><span class="nf">goto-char</span> <span class="nv">max</span><span class="p">)</span> <span class="p">(</span><span class="nf">line-end-position</span><span class="p">))))))</span>
+</code></pre>
+</div>
+
+
+<p>My binding:</p>
+
+<div class="highlight"><pre><code class="scheme"><span class="p">(</span><span class="nf">global-set-key</span> <span class="p">(</span><span class="nf">kbd</span> <span class="s">"C-7"</span><span class="p">)</span> <span class="ss">'comment-or-uncomment-current-line-or-region</span><span class="p">)</span>
+</code></pre>
+</div>
+
+
+
+
+
+<hr>
+
+<div id="disqus_thread"></div><script type="text/javascript" src="comment-stuff-in-in-emacs_files/embed.js"></script><noscript><a href="http://disqus.com/forums/tuxicity/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com/" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
+<a href="#">Back to Top</a>
+
+<div id="related">
+  <h3>Related Posts</h3>
+  <ol>
+    
+    <li><a href="http://blog.tuxicity.se/elisp/emacs/2010/05/07/clean-up-buffer-or-region-in-emacs.html">Clean up buffer or region in Emacs</a></li>
+    
+    <li><a href="http://blog.tuxicity.se/ecukes/elisp/emacs/testing/2010/04/25/ecukes-version-0.0.2.html">Ecukes version 0.0.2</a></li>
+    
+    <li><a href="http://blog.tuxicity.se/cucumber/elisp/emacs/testing/2010/04/01/ecukes-cucumber-for-emacs.html">Ecukes - Cucumber for Emacs</a></li>
+    
+  </ol>
+</div>
+
+      </div>
+    </div>
+    <hr>
+    <a href="http://github.com/rejeep">
+      <img style="border: 0pt none ; position: absolute; top: 0pt; right: 0pt;" src="comment-stuff-in-in-emacs_files/forkme_right_red_aa0000.png" alt="Fork me on GitHub">
+    </a>
+    <script type="text/javascript"><!--
+/* Script removed by snapshot save */
+--></script>
+  </body></html>

@@ -1,0 +1,108 @@
+X-Account-Key: account1
+X-UIDL: 0002796841def805
+X-Mozilla-Status: 0001
+X-Mozilla-Status2: 00000000
+X-Mozilla-Keys:                                                                                 
+Return-Path: <emacs-orgmode-bounces+giovanni=reflections.co.nz@gnu.org>
+Delivered-To: gdzn1034@mbox.godzone.net.nz
+Received: from mail1.godzone.net.nz (agree-14.godzone.net.nz [IPv6:2404:1800:500:100::251:14])
+	by mail4.godzone.net.nz (Postfix) with ESMTP id ADEFEE4A
+	for <gdzn1034@mbox.godzone.net.nz>; Mon,  7 Jun 2010 20:31:21 +1200 (NZST)
+Received: from localhost (localhost [127.0.0.1])
+	by mail1-local.godzone.net.nz (Postfix) with ESMTP id 920CA14A2
+	for <Giovanni@reflections.co.nz>; Mon,  7 Jun 2010 20:31:10 +1200 (NZST)
+X-Virus-Scanned: amavisd-new at godzone.net.nz
+Authentication-Results: mail1.godzone.net.nz (amavisd-new); dkim=softfail
+	(fail, message has been altered) header.i=@gmail.com
+Authentication-Results: mail1.godzone.net.nz (amavisd-new);
+	domainkeys=softfail (fail, message has been altered)
+	header.from=paulmrodriguez@gmail.com
+Received: from mail1.godzone.net.nz ([127.0.0.1])
+	by localhost (mail1.godzone.net.nz [127.0.0.1]) (amavisd-new, port 10025)
+	with ESMTP id RwFEucQa9xly for <Giovanni@reflections.co.nz>;
+	Mon,  7 Jun 2010 20:31:05 +1200 (NZST)
+X-Greylist: greylisting inactive for giovanni@reflections.co.nz in SQLgrey-1.7.6
+Received: from lists.gnu.org (lists.gnu.org [199.232.76.165])
+	(using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mail1.godzone.net.nz (Postfix) with ESMTPS id 9917F1185
+	for <Giovanni@reflections.co.nz>; Mon,  7 Jun 2010 20:31:04 +1200 (NZST)
+Received: from localhost ([127.0.0.1]:50407 helo=lists.gnu.org)
+	by lists.gnu.org with esmtp (Exim 4.43)
+	id 1OLXj8-0001RL-KX
+	for Giovanni@reflections.co.nz; Mon, 07 Jun 2010 04:30:34 -0400
+Received: from [140.186.70.92] (port=34861 helo=eggs.gnu.org)
+	by lists.gnu.org with esmtp (Exim 4.43) id 1OLOH8-0001ED-5J
+	for emacs-orgmode@gnu.org; Sun, 06 Jun 2010 18:25:03 -0400
+Received: from Debian-exim by eggs.gnu.org with spam-scanned (Exim 4.69)
+	(envelope-from <paulmrodriguez@gmail.com>) id 1OLOH6-0004TQ-Ci
+	for emacs-orgmode@gnu.org; Sun, 06 Jun 2010 18:25:02 -0400
+Received: from mail-yw0-f178.google.com ([209.85.211.178]:37940)
+	by eggs.gnu.org with esmtp (Exim 4.69)
+	(envelope-from <paulmrodriguez@gmail.com>) id 1OLOH6-0004TK-AR
+	for emacs-orgmode@gnu.org; Sun, 06 Jun 2010 18:25:00 -0400
+Received: by ywh8 with SMTP id 8so2543487ywh.6
+	for <emacs-orgmode@gnu.org>; Sun, 06 Jun 2010 15:24:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=gamma;
+	h=domainkey-signature:received:received:from:to:subject:user-agent
+	:date:message-id:mime-version:content-type;
+	bh=ZRDi3BG3n36P/S3rEhTdF7tiwrYyIAkPQfriox2KMkM=;
+	b=Nygy9T4dLzAuo/xCKqvJMsMZ5amkBbWlYB52yQ7xk9KSbmHF1OrmtlAswkEdoav3p6
+	C4WGf+MIq1kgPKtSRxE5NrOonFIuhDsmxe7Hx2vm3+tuLYIHhhzwgLpCW9B4Js6sxt5r
+	gLLuFpMqRQ6xKeQR6HLbg5O1PTWN0/xg35c+4=
+DomainKey-Signature: a=rsa-sha1; c=nofws; d=gmail.com; s=gamma;
+	h=from:to:subject:user-agent:date:message-id:mime-version
+	:content-type;
+	b=enlqw0rSWriUHhaI8qR6bnNLOvCLgMQIvax6izi0E00zWdgzGtZd/xqrHoxHK70f/s
+	vZFhFAIPeqVTPeTCWWVUbbyIsnDWohyu10ixh1LAzbQ4TO96ybUWB+HGW6rwlftXl7Yr
+	WT6T7xpceOtZrch/lLjBApVIsPkxBK59J5hg0=
+Received: by 10.101.207.12 with SMTP id j12mr14424310anq.250.1275863098451;
+	Sun, 06 Jun 2010 15:24:58 -0700 (PDT)
+Received: from Severus.gmail.com (96-33-131-50.dhcp.slid.la.charter.com
+	[96.33.131.50])
+	by mx.google.com with ESMTPS id a18sm20699171anl.3.2010.06.06.15.24.57
+	(version=TLSv1/SSLv3 cipher=RC4-MD5);
+	Sun, 06 Jun 2010 15:24:58 -0700 (PDT)
+From: "Paul M. Rodriguez" <paulmrodriguez@gmail.com>
+To: emacs-orgmode@gnu.org
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/23.1.90 (gnu/linux)
+Date: Sun, 06 Jun 2010 17:25:04 -0500
+Message-ID: <87631vdcjj.fsf@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+X-detected-operating-system: by eggs.gnu.org: GNU/Linux 2.6 (newer, 2)
+X-Mailman-Approved-At: Mon, 07 Jun 2010 04:29:15 -0400
+Subject: [Orgmode] org-velocity --- something like Notational Velocity for
+	Org
+X-BeenThere: emacs-orgmode@gnu.org
+X-Mailman-Version: 2.1.5
+Precedence: list
+List-Id: "General discussions about Org-mode." <emacs-orgmode.gnu.org>
+List-Unsubscribe: <http://lists.gnu.org/mailman/listinfo/emacs-orgmode>,
+	<mailto:emacs-orgmode-request@gnu.org?subject=unsubscribe>
+List-Archive: <http://lists.gnu.org/archive/html/emacs-orgmode>
+List-Post: <mailto:emacs-orgmode@gnu.org>
+List-Help: <mailto:emacs-orgmode-request@gnu.org?subject=help>
+List-Subscribe: <http://lists.gnu.org/mailman/listinfo/emacs-orgmode>,
+	<mailto:emacs-orgmode-request@gnu.org?subject=subscribe>
+Sender: emacs-orgmode-bounces+giovanni=reflections.co.nz@gnu.org
+Errors-To: emacs-orgmode-bounces+giovanni=reflections.co.nz@gnu.org
+
+
+There exists a notetaking program for OSX called Notational Velocity (http://notational.net/) with an ingeniously simple interface.  (I say "there exists" since I've never actually used it.)  When you enter a search phrase, the program lists all notes where the phrase occurs; if there are no matching notes, then the search phrase is used as the title of a new note.
+
+When I read about this I thought it would be straightforward to create a similar interface for Emacs, storing the notes in Org format.  Each note is simply a heading in a file.  The mode line is used to read a search, a display buffer shows the results, and (optionally) org-remember is used to record new notes.  You can use the interface to maintain a single "bucket" file, or to navigate any Org file.
+
+The package is available at http://gopher.ruricolist.com/lisp/org-velocity.el.
+
+It works for me but of course any feedback or suggestions would be
+welcome.
+
+Paul Rodriguez
+
+_______________________________________________
+Emacs-orgmode mailing list
+Please use `Reply All' to send replies to the list.
+Emacs-orgmode@gnu.org
+http://lists.gnu.org/mailman/listinfo/emacs-orgmode
+

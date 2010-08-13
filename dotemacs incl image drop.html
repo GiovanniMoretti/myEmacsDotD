@@ -1,0 +1,1131 @@
+;; -----------------------------------------------------------------------------
+;; J.T. Halbert's .emacs file
+;;
+;; Time-stamp: "2008-09-08 10:28:17 jthalbert"
+;;
+;; optimized for use with GNU Emacs 22.1.1 (i386-apple-darwin8.9.1,
+;; Carbon Version 1.6.0) of 2007-06-17
+;;
+;; The bleeding edge version.  See
+;; http://homepage.mac.com/zenitani/emacs-e.html
+;; 
+;; Defined Keys:
+;; 
+;; C-c C-r C-t     -- call random-color-theme
+;; C-c d           -- insert-date: Wednesday, August 31 2005
+;; C-u C-c d       -- insert-date: 08-31-2005
+;; C-u C-u C-c d   -- insert-date: 08.31.2005
+;; C-return        -- dabbrev-expand
+;; M-return        -- py-complete in python-mode
+;; C-x C-u         -- undo
+;; C->             -- end-of-buffer
+;; C-<             -- beginning-of-buffer
+;; C-$             -- ispell-word
+;; C-c l           -- layout-save-current
+;; C-c C-l C-l     -- layout-restore
+;; C-c C-l C-c     -- layout-delete-current
+;; C-c r f         -- recentf-open-files-in-simply-buffers
+;; M-y             -- browse-kill-ring (unless last command was a yank, 
+;;                                      then it just runs yank-pop as usual)
+;; C-x C-b         -- iswitchb-buffer (in addition to the standard C-x b)
+;; M-x mf          -- this runs latex-make-region-fraction (see below)... 
+;;                    best practice is to start a fraction with a M-<space> 
+;;                    to start marking when typing.
+;;                    then when done hit M-x mf
+;; M-x perl-eval   -- This passes the current region to the shell command perl
+;; -----------------------------------------------------------------------------
+;;
+;; -----------------------------------------------------------------------------
+;; TO DO
+;; -----------------------------------------------------------------------------
+;; 
+;; *Add the ability to put {}{} after a \frac command.  Straightforward.
+;; 
+;; *I would like to write a function that will change a tag.  It would
+;;  be called from anywhere between the tags.  Ask for what to change
+;;  to.  Consider using sgml-delete-tag and then 
+;;
+;; *I would like to write a function that uses htmlize.el to pass back
+;;  just the html for a piece of stuff.  Then I could send that to my
+;;  website in a blockquote and have all the colors and everything set
+;;  up.  Possibly base it on color-theme-black-on-gray or something
+;;  similar.
+;; 
+;; *I would like to add a key to the font context menu in LaTeX mode
+;;  that would give me the blackboard fonts \mathbb{}.
+;;
+;; *I would like to add the ability to drag-n-drop to find the image
+;;  size and pass that to the buffer as well (possibly different for
+;;  html and latex).  A possibility is the identify command (part of
+;;  imagemagick)
+;;
+
+;; -----------------------------------------------------------------------------
+;; General Setup
+;; -----------------------------------------------------------------------------
+
+;; start the emacsclient server
+(server-start)
+
+;; no splash screen
+(setq inhibit-splash-screen t)
+
+;; add my ~/elisp directory and all subdirectories to load-path
+(if (fboundp 'normal-top-level-add-subdirs-to-load-path)
+        (let* ((my-lisp-dir (expand-file-name "~/elisp"))
+              (default-directory my-lisp-dir))
+           (setq load-path (cons my-lisp-dir load-path))
+           (normal-top-level-add-subdirs-to-load-path)))
+
+;; load color-theme and choose one of my favorites at random, but only
+;; if the emacs is a windowed variety
+(defvar current-color-theme
+  "the current color-theme")            ;this is defined so I can
+                                        ;always tell what color-theme
+                                        ;I am using
+
+(if (not window-system) 
+    nil
+  (progn
+    (require 'color-theme)
+    (setq favorite-color-themes
+          '((color-theme-robin-hood)
+            (color-theme-goldenrod)
+            (color-theme-comidia)
+            (color-theme-charcoal-black)
+            (color-theme-clarity)
+            (color-theme-ld-dark)
+            (color-theme-matrix)
+            (color-theme-oswald)
+            (color-theme-kingsajz)
+            (color-theme-parus)
+            (color-theme-dark-blue2)
+            (color-theme-gray30)
+            (color-theme-subtle-hacker)))
+    (random t)                          ;set the seed according to the
+                                        ;system clock
+    (setq current-color-theme 
+          (nth (random (length favorite-color-themes)) 
+               favorite-color-themes))
+    (eval current-color-theme)))
+
+;; Change title bar to ~/file-directory if the current buffer is a
+;; real file or buffer name if it is just a buffer.
+(setq frame-title-format 
+      '(:eval 
+        (if buffer-file-name 
+            (replace-regexp-in-string 
+             (getenv "HOME") "~"
+             (file-name-directory buffer-file-name)) 
+          (buffer-name))))
+
+;; Preserve the owner and group of the file you're editing 
+(setq backup-by-copying-when-mismatch t)
+
+;; Drive out the mouse when it's too near to the cursor.
+(mouse-avoidance-mode 'animate)
+
+;; Set up recentf so I can get a list of recent files when I start
+(recentf-mode 1)
+;;(recentf-open-files nil "*Recent Files*")
+(setq recentf-max-saved-items 1200)
+
+;; instead open the welcome file
+;;(find-file "~/welcome")
+(find-file "~/emacs-intro.png")
+
+;; When you start Emacs, package Session restores various variables
+;; (e.g., input histories) from your last session. It also provides a
+;; menu containing recently changed/visited files and restores the
+;; places (e.g., point) of such a file when you revisit it.
+;;
+;; C-x C-/ jumps to the position of the last change
+(require 'session)
+(add-hook 'after-init-hook 'session-initialize)
+
+;; add <ALT>
+(setq mac-option-modifier 'alt)
+
+;; MTorus: navigation with marks on a ring of rings (torus)
+;; keybindings are such that C-<right>,<left> move in a ring and
+;; C-<up>,<down> move between rings
+(require 'mtorus) 
+(global-set-key (kbd "A-<right>") 'mtorus-create-element)
+(global-set-key (kbd "A-<up>") 'mtorus-create-ring)
+(global-set-key (kbd "C-<right>") 'mtorus-nephew-element)
+(global-set-key (kbd "C-<left>") 'mtorus-niece-element)
+(global-set-key (kbd "C-<down>") 'mtorus-aunt-element)
+(global-set-key (kbd "C-<up>") 'mtorus-uncle-element)
+
+;; make text-mode the default major mode and start auto-fill mode
+;; auto-magically
+(setq default-major-mode 'text-mode)
+(add-hook 'text-mode-hook 'turn-on-auto-fill)
+
+;; remove toolbar
+(tool-bar-mode -1)
+
+;; remove scrollbar
+(scroll-bar-mode -1)
+
+;; Tell Emacs where to find info files
+(setq Info-directory-list
+      '("/Applications/Emacs.app/Contents/Resources/info"
+        "/usr/share/info"))
+
+;; turn off the annoying alarm bell
+(setq ring-bell-function 'ignore)
+
+;; Make scripts executable on Save (saves having to do the chmod every time)
+(add-hook 'after-save-hook 'executable-make-buffer-file-executable-if-script-p)
+
+;; Make initial frame as tall as possible
+(setq initial-frame-alist '((top . 1) (height . 63)))
+
+;; Set up Artist-mode
+(setq artist-figlet-program "/sw/bin/figlet")
+
+;; set up Time Stamps
+(add-hook 'before-save-hook 'time-stamp)
+
+;; Setting up itunes.el
+;; No longer touch the mouse to mess with itunes
+;;  * Press the itunes key and then one of:
+;;      key again            : toggle info window.
+;;      +/-/up/down/mute/0-9 : volume control
+;;      left/right           : prev/next track
+;;      space                : toggles playing
+(setq itunes-key [f5])
+(require 'osx-itunes)
+
+
+;; Set up WindMove to be able to move between windows with shift-arrow
+(when (fboundp 'windmove-default-keybindings)
+      (windmove-default-keybindings))
+
+;; -----------------------------------------------------------------------------
+;; Loading various Modes and do setup
+;; -----------------------------------------------------------------------------
+
+;; Preliminary setup for AUCTeX and ebib
+(autoload 'ebib "ebib" "Ebib, a BibTeX database manager." t)
+(setq TeX-auto-save t)                  
+(setq TeX-parse-self t)
+(setq-default TeX-master nil)           ;set up AUCTeX to deal with
+                                        ;multiple file documents.
+(add-hook 'LaTeX-mode-hook (lambda ()
+                                  (TeX-fold-mode 1))) ;turn on
+                                                      ;tex-fold-mode
+                                                      ;by default
+
+(add-hook 'LaTeX-mode-hook 'TeX-PDF-mode) ;turn on pdf-mode.  AUCTeX
+                                          ;will call pdflatex to
+                                          ;compile instead of latex.
+
+(add-hook 'LaTeX-mode-hook 'LaTeX-math-mode) ;turn on math-mode by
+                                             ;default
+
+(add-hook 'LaTeX-mode-hook 'reftex-mode) ;turn on REFTeX mode by
+                                         ;default
+(add-hook 'LaTeX-mode-hook 'Mueller-TeX-mode) ;turn on Mueller-TeX
+                                              ;mode by default.  See
+                                              ;below for the
+                                              ;definition of this
+                                              ;minor mode
+
+(setq reftex-label-alist
+        '(("lemma"   ?a "lm:"  "~\\ref{%s}" t ("lemma"   "lm.") -2)
+          ("corollary"  ?c "crl:" "~\\ref{%s}" t ("corollary"  "crl.") -3)
+          ("definition" ?d "dfn:" "~\\ref{%s}" t ("definition" "dfn.") -3)
+          ("remark" ?r "rm:" "~\\ref{%s}" t ("remark" "rm.") -2)
+          ("theorem" ?h "thr:" "~\\ref{%s}" t   ("theorem" "th.") -3)))
+
+(add-hook 'LaTeX-mode-hook 'flyspell-mode)
+
+(add-hook
+ 'LaTeX-mode-hook
+ (lambda ()
+   (smart-dnd-setup
+    '(
+      ("\\.tex\\'" . "\\input{%r}\n")
+      ("\\.cls\\'" . "\\documentclass{%f}\n")
+      ("\\.sty\\'" . "\\usepackage{%f}\n")
+      ("\\.eps\\'" . "\\includegraphics[]{%r}\n")
+      ("\\.ps\\'"  . "\\includegraphics[]{%r}\n")
+      ("\\.pdf\\'" . "\\includegraphics[]{%r}\n")
+      ("\\.jpg\\'" . "\\includegraphics[]{%r}\n")
+      ("\\.png\\'" . "\\includegraphics[]{%n}\n")
+      ("\\.mov\\'" . 
+       "\\includemovie[\n\tposter,\n\trepeat=1,\n\ttext=(%r)\n\t]{}{}{%r}\n")
+      ("\\.avi\\'" . 
+       "\\includemovie[\n\tposter,\n\trepeat=1,\n\ttext=(%r)\n\t]{}{}{%r}\n")))))
+
+
+;; Set up skeletons (see below) in a menu in AUCTeX mode
+(defvar LaTeX-mode-menu)
+(add-hook 'LaTeX-mode-hook 
+          (lambda () 
+            (easy-menu-add-item LaTeX-mode-menu
+                                nil ["Skeletons" nil t])
+            (easy-menu-add-item LaTeX-mode-menu '("Skeletons")
+                                ["Letter" latex-letter-skeleton
+                                t])
+            (easy-menu-add-item LaTeX-mode-menu '("Skeletons")
+                                ["Brief Article"
+                                latex-brief-article-skeleton t])
+            (easy-menu-add-item LaTeX-mode-menu '("Skeletons")
+                                ["AMS Article"
+                                latex-AMS-article-skeleton t])
+            (easy-menu-add-item LaTeX-mode-menu '("Skeletons")
+                                ["Foils" latex-foils-skeleton t])
+            (easy-menu-add-item LaTeX-mode-menu '("Skeletons")
+                                ["Simple"
+                                latex-simple-text-skeleton t])))
+
+;; set the shell that is used to execute all the TeX commands by AUCTeX
+(setq TeX-shell "/bin/zsh")
+
+;; Set up TeX-output-view-style.  Note that for pdf viewing I have set
+;; a script repreview.  This is available in ~/bin/.  
+;; It calls a shell script: 
+;; ~/Library/Scripts/Reload Preview Document.scpt 
+;;
+;; I found the script here:
+;; http://www.macosxhints.com/article.php?story=2006010200141989&lsrc=osxh
+
+;; I recently discovered TeXniscope.  It is much better.
+;; Auto-reloading once changes are made...and it plays well with Emacs
+;; (pdfsync)
+;; 
+;; TeXniscope is no longer under active development and so I am back
+;; to using preview, but it seems to handle renewing in 10.5 better
+;; than in 10.4
+(setq TeX-output-view-style
+      (quote 
+       (
+        ("^dvi$" 
+         ("^landscape$" "^pstricks$\\|^pst-\\|^psfrag$") 
+         "%(o?)dvips -t landscape %d -o && gv %f") 
+        ("^dvi$" "^pstricks$\\|^pst-\\|^psfrag$" "%(o?)dvips %d -o && gv %f")
+        ("^dvi$" 
+         ("^a4\\(?:dutch\\|paper\\|wide\\)\\|sem-a4$" "^landscape$") 
+         "%(o?)xdvi %dS -paper a4r -s 0 %d") 
+        ("^dvi$" "^a4\\(?:dutch\\|paper\\|wide\\)\\|sem-a4$" 
+         "%(o?)xdvi %dS -paper a4 %d") 
+        ("^dvi$" 
+         ("^a5\\(?:comb\\|paper\\)$" "^landscape$") 
+         "%(o?)xdvi %dS -paper a5r -s 0 %d") 
+        ("^dvi$" "^a5\\(?:comb\\|paper\\)$" "%(o?)xdvi %dS -paper a5 %d") 
+        ("^dvi$" "^b5paper$" "%(o?)xdvi %dS -paper b5 %d") 
+        ("^dvi$" "^letterpaper$" "%(o?)xdvi %dS -paper us %d") 
+        ("^dvi$" "^legalpaper$" "%(o?)xdvi %dS -paper legal %d") 
+        ("^dvi$" "^executivepaper$" "%(o?)xdvi %dS -paper 7.25x10.5in %d") 
+        ("^dvi$" "." "%(o?)xdvi %dS %d") 
+        ("^pdf$" "." "open -a /Applications/Skim.app %o")
+        ("^html?$" "." "netscape %o"))))
+
+;; Load CSS-mode
+(autoload 'css-mode "css-mode")
+(add-to-list 'auto-mode-alist '("\\.css\\'" . css-mode))
+
+;; change CSS-mode indentation style to c-style
+(setq cssm-indent-function #'cssm-c-style-indenter)
+
+;; open Word files with antiword
+(autoload 'no-word "no-word" "word to txt")
+(add-to-list 'auto-mode-alist '("\\.doc\\'" . no-word))
+
+;; load htmlize.el
+(require 'htmlize)
+
+;; Python setup
+
+(autoload 'python-mode "python-mode" "Python Mode." t)
+(add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
+(add-to-list 'interpreter-mode-alist '("python" . python-mode))
+(setq py-python-command "/usr/bin/python")
+(setenv "PYMACS_PYTHON" "/usr/bin/python")
+;; (autoload 'pymacs-apply "pymacs")
+;; (autoload 'pymacs-call "pymacs")
+;; (autoload 'pymacs-eval "pymacs" nil t)
+;; (autoload 'pymacs-exec "pymacs" nil t)
+;; (autoload 'pymacs-load "pymacs" nil t)
+;; (eval-after-load "pymacs" 
+;;   '(add-to-list 'pymacs-load-path (expand-file-name "~/pymacs")))
+;; (require 'pycomplete)
+;; (define-key py-mode-map (kbd "M-<return>")  'py-complete)
+
+;; Open .content files in html-mode
+(add-to-list 'auto-mode-alist '("\\.content\\'" . html-mode))
+
+;; turn on flyspell-mode in html-mode
+(add-hook 'html-mode-hook 'flyspell-mode)
+
+;; Setting up drag-and-drop for html mode
+(add-hook
+ 'html-mode-hook
+ (lambda ()
+   (smart-dnd-setup
+    '(
+      ("\\.gif\\'" . "<img src=\"%R\">\n")
+      ("\\.jpg\\'" . "<img src=\"%R\">\n")
+      ("\\.png\\'" . "<img src=\"%R\">\n")
+      ("\\.css\\'" . 
+       "<link rel=\"stylesheet\" type=\"text/css\" href=\"%R\">\n" )
+      ("\\.js\\'"  . "<script type=\"text/javascript\" src=\"%R\"></script>\n" )
+      (".*" . "<a href=\"%R\">%f</a>\n")
+      ))))
+
+
+;; Load WinnerMode, a global minor mode that allows undo and redo of
+;; window configuration with commands 'C-c left' and 'C-c right'.
+(winner-mode 1)
+
+;; Set up Matlab Mode (note this overrides objective-C mode)
+(load "matlab.el")
+(setenv "DISPLAY" ":0.0")               ;this gives matlab access to
+                                        ;the X11 windowing system, so
+                                        ;I can see figures, etc.
+(autoload 'matlab-mode "matlab" "Matlab Editing Mode" t)
+(add-to-list
+ 'auto-mode-alist
+ '("\\.m$" . matlab-mode))
+(setq matlab-indent-function t)
+(setq matlab-shell-command "/Applications/MATLAB74/bin/matlab")
+(setq matlab-shell-command-switches '("-nosplash" "-nodesktop"))
+
+(defalias 'perl-mode 'cperl-mode)
+(setq cperl-hairy t) ;; Turns on most of the CPerlMode options
+
+;; this fixes the problem that most color themes have with cperl-mode.
+(defvar cperl-array-face)               ;tell compiler not to warn
+                                        ;about this varible
+(add-hook 'cperl-mode-hook (lambda () (set-face-background
+                                       cperl-array-face nil)))
+
+;; From the O'reilly book Perl Hacks
+(defun perl-eval (beg end)
+  "Pass selected region to the shell command perl."
+  (interactive "r")
+  (shell-command-on-region beg end "perl"))
+
+;; Fix the change that appeared in latest emacs version for minibuffer
+;; prompt face
+(set-face-foreground 'minibuffer-prompt "yellow")
+
+;; Set up layout-restore.  Unfortunately something about this package
+;; conflicts with ediff.  So it can't be used.  No big deal
+;; though... never really used it.
+;;  (require 'layout-restore)
+
+;; Set up browse-kill-ring.  M-y invokes browse-kill-ring.
+(require 'browse-kill-ring+)
+(browse-kill-ring-default-keybindings)
+
+;; Set up smart-compile
+(require 'smart-compile+)
+(defalias 'scp 'smart-compile)
+
+;; Load improvements to bookmark: bookmark+.el
+(require 'bookmark+)
+
+;; Load extensions to cc-mode
+(eval-after-load "c-mode" '(require 'cc-mode+))
+(eval-after-load "cc-mode" '(require 'cc-mode+))
+
+;; change complete-tag to this since M-TAB bound to Mac Change
+;; Application
+(global-set-key (kbd "M-<return>") 'complete-tag)
+
+;; Add HTML-Helper-Mode
+(autoload 'html-helper-mode "html-helper-mode" "Yay HTML" t)
+
+;; Turn on IswitchBuffers
+(iswitchb-mode 1)
+
+;; setting up DirEd+
+(eval-after-load "dired" '(require 'dired+))
+(eval-after-load "dired-x" '(require 'dired+))
+
+;;; AsciiTable
+(autoload 'ascii-table "ascii-table" nil t)
+(autoload 'ascii-table-hex "ascii-table" nil t)
+(autoload 'ascii-table-octal "ascii-table" nil t)
+(autoload 'ascii-table-decimal "ascii-table" nil t)
+
+;; -----------------------------------------------------------------------------
+;; Key Bindings
+;; -----------------------------------------------------------------------------
+
+(global-set-key "\C-w"     'backward-kill-word)
+(global-set-key "\C-x\C-k" 'kill-region)
+(global-set-key "\C-c\C-k" 'kill-region)
+
+(define-key global-map "\C-c\C-r\C-t" 'random-color-theme) ;see below
+(global-set-key [(control ?c) ?d] 'insert-date)
+(define-key global-map [C-return] 'dabbrev-expand) ;this redefines
+                                                   ;dynamic abbrev
+                                                   ;since the old
+                                                   ;command M-/
+                                                   ;conflicts with OS
+                                                   ;X call to equation
+                                                   ;service.
+
+(define-key global-map "\C-x\C-u" 'undo) ;this prevents an error that
+                                         ;always happens to me: I
+                                         ;press C-x C-u when I mean
+                                         ;C-x u
+
+(global-set-key (kbd "C->") 'end-of-buffer)       ;these two are normally
+(global-set-key (kbd "C-<") 'beginning-of-buffer) ;bound to M->, M-<
+                                                  ;but those conflict
+                                                  ;with a shortcut key
+                                                  ;to a service for
+                                                  ;omnioutliner.
+
+(global-set-key (kbd "C-$") 'ispell-word) ;normally bound to M-$ but
+                                          ;that conflicts with MacOSX
+                                          ;key for picture grab
+
+;(global-set-key [?\C-c ?l] 'layout-save-current)
+;(global-set-key [?\C-c ?\C-l ?\C-l] 'layout-restore)
+;(global-set-key [?\C-c ?\C-l ?\C-c] 'layout-delete-current) 
+
+;;(global-set-key "\C-x\C-b" 'bs-show)  ;use bs-show instead of the
+                                        ;standard
+
+(global-set-key "\C-x\C-b" 'iswitchb-buffer)
+
+(global-set-key [?\C-c ?r ?f] 'recentf-open-files)
+
+;; Not really key-bindings.  These just rename a few commonly used
+;; functions
+(defalias 'cr 'comment-region)
+(defalias 'ucr 'uncomment-region)
+(defalias 'mf 'latex-make-region-fraction)
+
+;; -----------------------------------------------------------------------------
+;; Auto-Insert Stuff
+;; -----------------------------------------------------------------------------
+
+(auto-insert-mode)
+(setq auto-insert-query nil)            ;So I am not asked before insertion
+(setq auto-insert-alist
+       '(
+          ((cperl-mode . "Perl Program")
+          nil
+          "#! /usr/bin/perl\n#\n"
+          "# File: " (file-name-nondirectory buffer-file-name) "\n"
+          "# Time-stamp: \" \"\n"
+          "# Author: "(user-full-name) "\n#\n"
+          "# Description:\n# " _ "\n"
+          "use strict;\n"
+          "use warnings;\n"
+          "use Data::Dumper;\n"
+          )
+          (("\\.content\\'" . "Web Content File")
+           nil
+           "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n"
+           "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\"\n"
+           "          \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\";>\n"
+           "<html xmlns=\"http://www.w3.org/1999/xhtml\"; xml:lang=\"en\">\n"
+           "<!-- The following is here only to tell Emacs that I am\n"
+           "     writing xhtml instead of html.  Unfortunately you can't\n"
+           "     just run xhtml-mode. -->\n"
+           "\n"
+           "  <!-- CONTENT -->\n"
+           _"\n")
+          (("\\.c\\'" . "C Program")
+             nil
+             "/* "(file-name-nondirectory buffer-file-name)" */\n"
+             "/* Author: "(user-full-name)" */\n"
+             "/* Time-stamp: \" \" */\n"
+             "\n"
+             "/* Commentary:\n"
+             "\n"
+             "   "_" */\n")))
+;; -----------------------------------------------------------------------------
+;; Minor Mode Definitions
+;; -----------------------------------------------------------------------------
+
+(define-minor-mode Mueller-TeX-mode
+  "toggles Mueller-TeX-mode.  This mode changes the behavior of
+   C-return, _, ^, &, ., $."
+  :keymap
+  '(("$" . (lambda () (interactive) (double-insert "$" "$")))
+    ("." . dots)
+    ("&" . ampersand)
+    ([C-return] . tab-map)
+    ("^" . (lambda () (interactive) (character-or-brackets "^")))
+    ("_" . (lambda () (interactive) (character-or-brackets "_"))))
+  
+  (defun double-insert (left right)
+    (interactive)
+    (if (equal (char-to-string (char-before)) left)
+        (delete-backward-char -1)
+      (insert (concat left right))
+      (backward-char)))
+  
+  (defun character-or-brackets (character)
+    "This is a embellishment of a function developed originally
+     by Carl Mueller.  It is meant to be used with a key
+     definition for _ or ^.  Repeated use of one of those will
+     put an automatic double bracket (or pair of them if
+     appropriate)."
+    (interactive)
+    (if (not (equal (char-to-string (char-before)) character))
+        (insert character)
+      (if (or 
+           (equal "\\int_" (buffer-substring (- (point) 5) (point)))
+           (equal "\\prod_" (buffer-substring (- (point) 6) (point)))
+           (equal "\\sum_" (buffer-substring (- (point) 5) (point))))
+          ((lambda () (insert "{}^{}") (backward-char 4))) 
+        (insert "{}")
+        (backward-char))))
+  
+  (defun ampersand ()
+    "Modified from Carl Mueller's code.  This puts a \& in if you
+     are in normal text or a & in if you are in an array."
+    (interactive)
+    (let (array)
+      (save-excursion
+        (re-search-backward "\\\\begin" nil t)
+        (setq array 0)
+        (if (string-match 
+             (concat "\\\\begin{"
+                     "\\(align\\|"
+                     "cases\\|"
+                     "diagram\\|"
+                     "array\\|"
+                     "\\(p\\|b\\|B\|v\\|V\\)matrix\\)"
+                     "}")
+             (this-line))
+            (setq array 1)))
+      (if (equal array 1)
+          (insert "&")
+        (insert "\\&"))))
+  
+  (defun dots ()
+    "this is modified from Carl Mueller's code.  Only the bits I
+     needed.  It basicaly just puts in a . when next to text, but
+     a .. will be replaced with \cdots and ,.. with
+     ,\ldots ;.. with \vdots :.. with \ddots"
+    (interactive)
+    (let (previous-character)
+      (setq previous-character (char-to-string (char-before)))
+      (cond
+       
+       ((not (equal previous-character "."))
+        (insert "."))
+       
+       (t
+        (delete-backward-char 1)
+        (if (equal (char-before) ?,)
+            (insert "\\ldots")
+          (if (equal (char-before) ?\;)
+              ((lambda () 
+                 (delete-backward-char 1) (insert "\\vdots")))
+            (if (equal (char-before) ?:)
+                ((lambda () 
+                   (delete-backward-char 1) (insert "\\ddots")))
+              (insert "\\cdots"))))))))
+  
+  (defun tab-map ()
+    (interactive)
+    (cond  
+
+     ((equal "\}\{"
+             (buffer-substring (point) (+ (point) 2)))
+      (forward-char 2))
+
+     ((equal "\}^\{"
+             (buffer-substring (point) (+ (point) 3)))
+      (forward-char 3))
+
+     ((string-match "[\]\$\)\}\{^&|]"
+                    (char-to-string (char-after (point))))
+      (forward-char))
+
+     ((equal "\\\}"
+             (buffer-substring (point) (+ (point) 2)))
+      (forward-char 2))
+
+     ((equal "\\\|"
+             (buffer-substring (point) (+ (point) 2)))
+      (forward-char 2))
+
+     ((equal "\\right\\\\}"
+             (buffer-substring (point) (+ (point) 8)))
+      (forward-char 8))
+
+     ((equal "\\right"
+             (buffer-substring (point) (+ (point) 6)))
+      (forward-char 7))
+
+     (t
+      (command-execute 'dabbrev-expand)))))
+
+(define-minor-mode electric-brackets-mode
+  "toggles electric-brackets-mode.  This mode allows auto pairing
+  of (),[],\{\}, ... etc.  This is based on code lifted from Carl
+  Mueller's custom-latex.el"
+  :keymap
+  '(("[" . (lambda () (interactive) (double-insert "[" "]")))
+    ("(" . (lambda () (interactive) (double-insert "(" ")")))
+    ("{" . (lambda () (interactive) (double-slash "{" "}")))
+    ("|" . (lambda () (interactive) (double-slash "|" "|"))))
+  
+  (defun double-insert (left right)
+    (interactive)
+    (if (equal (char-to-string (char-before)) left)
+        (delete-backward-char -1)
+      (insert (concat left right))
+      (backward-char)))
+  
+  (defun double-slash (left right)
+    "Inserts {} or whatever"
+    (interactive)
+    (let (previous)
+      (setq previous (char-to-string (preceding-char)))
+      (if (equal previous left)
+          (delete-backward-char -1)
+        (if (not (equal (char-to-string (preceding-char)) "\\"))
+            (insert (concat left right))
+          (insert (concat left "\\" right))
+          (backward-char))
+        (backward-char)))))
+
+;; -----------------------------------------------------------------------------
+;; Functions
+;; -----------------------------------------------------------------------------
+
+(defun random-color-theme ()
+  "changes the color-theme to a random choice."
+  (interactive)
+  (let
+      '(all-color-themes
+        '((color-theme-aliceblue)         (color-theme-andreas)
+          (color-theme-arjen)             (color-theme-bharadwaj)
+          (color-theme-bharadwaj-slate)   (color-theme-billw)
+          (color-theme-black-on-gray)     (color-theme-blippblopp)
+          (color-theme-blue-eshell)       (color-theme-blue-gnus)
+          (color-theme-blue-mood)         (color-theme-blue-sea)
+          (color-theme-calm-forest)       (color-theme-charcoal-black)
+          (color-theme-clarity)           (color-theme-classic)
+          (color-theme-comidia)          
+          (color-theme-dark-blue)         (color-theme-dark-blue2)
+          (color-theme-dark-erc)          (color-theme-dark-font-lock)
+          (color-theme-dark-gnus)         (color-theme-dark-green)
+          (color-theme-dark-info)         (color-theme-dark-laptop)
+          (color-theme-deep-blue)         (color-theme-digital-ofs1)
+          (color-theme-emacs-21)          (color-theme-emacs-nw)
+          (color-theme-euphoria)          (color-theme-feng-shui)
+          (color-theme-fischmeister)      (color-theme-gnome)
+          (color-theme-gnome2)            (color-theme-goldenrod)
+          (color-theme-gray1)             (color-theme-gray30)
+          (color-theme-greiner)           (color-theme-gtk-ide)
+          (color-theme-high-contrast)     (color-theme-hober)
+          (color-theme-jb-simple)         (color-theme-jedit-grey)
+          (color-theme-jonadabian)        (color-theme-jonadabian-slate)
+          (color-theme-jsc-dark)          (color-theme-jsc-light)
+          (color-theme-jsc-light2)        (color-theme-katester)
+          (color-theme-kingsajz)          (color-theme-late-night)
+          (color-theme-lawrence)          (color-theme-ld-dark)
+          (color-theme-lethe)             (color-theme-marine)
+          (color-theme-marquardt)         (color-theme-matrix)
+          (color-theme-midnight)          (color-theme-mistyday)
+          (color-theme-montz)             (color-theme-oswald)
+          (color-theme-parus)             (color-theme-pierson)
+          (color-theme-pok-wob)           (color-theme-pok-wog)
+          (color-theme-ramangalahy)       (color-theme-raspopovic)
+          (color-theme-resolve)           (color-theme-retro-green)
+          (color-theme-retro-orange)      (color-theme-robin-hood)
+          (color-theme-rotor)             (color-theme-ryerson)
+          (color-theme-salmon-font-lock)  (color-theme-scintilla)
+          (color-theme-shaman)            (color-theme-simple-1)
+          (color-theme-sitaramv-nt)       (color-theme-sitaramv-solari)
+          (color-theme-snow)              (color-theme-snowish)
+          (color-theme-standard)          (color-theme-subtle-blue)
+          (color-theme-subtle-hacker)     (color-theme-taming-mr-arneson)
+          (color-theme-taylor)            (color-theme-tty-dark)
+          (color-theme-vim-colors)        (color-theme-whateveryouwant)
+          (color-theme-wheat)             (color-theme-word-perfect)
+          (color-theme-xemacs)            (color-theme-xp)
+          (color-theme-aalto-dark)        (color-theme-aalto-light)))
+    (random t)
+    (setq current-color-theme (nth (random (length
+    all-color-themes)) all-color-themes))
+    (eval current-color-theme)))
+
+    ;; I added the following line to color-theme-comidia definition in
+    ;; color-theme.el.
+    ;;(mode-line-inactive ((t (:background "Gray10" :foreground "SteelBlue"
+    ;;:box (:line-width 1 :style released-button)))))
+
+
+(defun this-line ()
+  (interactive)
+  "handy little tool."
+  (buffer-substring (point-at-bol) (point-at-eol)))
+
+;;  source: xemacs 20.3
+(defun count-words-region (start end)
+  "Print number of words in the region."
+       (interactive "r")
+       (save-excursion
+          (let ((n 0))
+           (goto-char start)
+           (while (< (point) end)
+             (if (forward-word 1)
+                 (setq n (1+ n))))
+           (message "Region has %d words" n)
+           n)))
+
+(defun find-next-double-word ()
+  "move to next doubled word, ignoring <...> tags and any
+  whitespace (including new lines)."
+  (interactive)
+  (re-search-forward "\\<\\([a-z]+\\)\\([\n \t]\\|<[^>]+>\\)+\\1\\>"))
+
+;; redefining the make-backup-file-name function in order to get
+;; backup files in ~/.backups/ rather than scattered around all over
+;; the filesystem. Note that you must have a directory ~/.backups/
+;; made.  This function looks first to see if that folder exists.  If
+;; it does not the standard backup copy is made.
+(defun make-backup-file-name (file-name)
+  "Create the non-numeric backup file name for `file-name'."
+  (require 'dired)
+  (if (file-exists-p "~/.backups")
+      (concat (expand-file-name "~/.backups/")
+              (replace-regexp-in-string "/" "!" file-name))
+    (concat file-name "~")))
+
+;; redefining the make-auto-save-file-name function in order to get
+;; autosave files sent to a single directory.  Note that this function
+;; looks first to determine if you have a ~/.autosaves/ directory.  If
+;; you do not it proceeds with the standard auto-save procedure.
+(defun make-auto-save-file-name ()
+  "Return file name to use for auto-saves of current buffer.."
+  (if buffer-file-name
+      (if (file-exists-p "~/.autosaves/") 
+          (concat (expand-file-name "~/.autosaves/") "#"
+                  (replace-regexp-in-string "/" "!" buffer-file-name)
+                  "#") 
+         (concat
+          (file-name-directory buffer-file-name)
+          "#"
+          (file-name-nondirectory buffer-file-name)
+          "#"))
+    (expand-file-name
+     (concat "#%" (buffer-name) "#"))))
+
+;opens list-buffers but with focus on it
+(defun list-buffers-other-win ()
+  "Opens list-buffers and put focus on it"
+  (interactive)
+  (list-buffers)
+  (other-window 1)
+  (goto-char (+ 4 (point))))
+
+
+(defun insert-date (prefix)
+  "Insert the current date. With prefix-argument, use ISO format. With
+   two prefix arguments, write out the day and month name."
+  (interactive "P")
+  (let ((format (cond
+                 ((not prefix) "%A, %B %d, %Y")
+                 ((equal prefix '(4)) "%m-%d-%Y")
+                 ((equal prefix '(16)) "%m.%d.%Y"))))
+    (insert (format-time-string format))))
+
+;; Different platforms sometimes use different line endings. For
+;; instance, Unix uses a newline character (Control-J); MS Windows
+;; uses a carriage-return character (Control-M) followed by a newline
+;; character.
+(defun unix-file ()
+  "Change the current buffer to Latin 1 with Unix line-ends."
+  (interactive)
+  (set-buffer-file-coding-system 'iso-latin-1-unix t))
+(defun dos-file ()
+  "Change the current buffer to Latin 1 with DOS line-ends."
+  (interactive)
+  (set-buffer-file-coding-system 'iso-latin-1-dos t))
+(defun mac-file ()
+  "Change the current buffer to Latin 1 with Mac line-ends."
+  (interactive)
+  (set-buffer-file-coding-system 'iso-latin-1-mac t))
+
+(defun trim-ws-in-string (string)
+  "This function removes the leading and trailing whitespace from
+   a string"
+  (replace-regexp-in-string "\\(^[ \t]*\\|[ \t]*$\\)" "" string))
+
+(defun latex-make-region-fraction (start end)
+  "This function takes a region of text and makes it into a
+  \frac{}{} command.  For example the region 1//3x will be turned
+  into \frac{1}{3x}."
+  (interactive "r")
+  (let 
+      (numerator
+       denominator)
+    (save-excursion
+      (save-restriction
+        (narrow-to-region start end)
+        (goto-char start)
+        (search-forward "//" nil t)
+        (setq numerator (buffer-substring start (- (point) 2))
+              denominator (buffer-substring (point) end))
+        (kill-region start end)
+        (insert (concat "\\frac{" 
+                        (trim-ws-in-string numerator)
+                        "}{" 
+                        (trim-ws-in-string denominator)
+                        "}"))))
+    (search-forward "}" nil t 2)))
+
+
+;; -----------------------------------------------------------------------------
+;; Skeletons
+;;
+;; The following skeletons can be called by their function names.  To
+;; add a new one I suggest looking at latex-brief-article-skeleton as
+;; an example.  To have more than one variable look to
+;; latex-letter-skeleton as a model.
+;; 
+;; These can be added to the menu bar as above file using
+;; easy-menu-add-item.
+;;
+;; -----------------------------------------------------------------------------
+
+(defun latex-letter-skeleton (receivers-address)
+  "Inserts a LaTeX letter skeleton into current buffer.  This
+  only makes sense for empty buffers."
+  (interactive "MReceiver's Address? ")
+  (skeleton-insert 
+   '(nil                ;no prompt                   
+     "\\documentclass[12pt]{letter}\n"
+     "\\usepackage[margin=1in]{geometry}\n"
+     "\\usepackage{pdfsync}\n"
+     "% Some of the article customisations are relevant for this class\n"
+     "\n"
+     "\\name{J.T. Halbert} % return address on the envelope\n"
+     "\\signature{J.T. Halbert} % Goes after the closing\n"
+     "\\address{Address}\n"
+     "\n"
+     "%\\makelabels % this command prints envelope labels on the final\n"
+     "            % page of the document\n"
+     "\n"
+     "\\begin{document}\n"
+     "\\begin{letter}{"receivers-address"}\n"
+     "\n"
+     "\\opening{" _ "} % eg Hello.\n"
+     "\n"
+     "\n"
+     "\n"
+     "\\closing{} % eg Regards,\n"
+     "\n"
+     "%\\cc{} % people this letter is cc-ed to\n"
+     "%\\encl{} % list of anything enclosed\n"
+     "%\\ps{} % any post scriptums.\n"
+     "\n"
+     "\\end{letter}\n"
+     "\\end{document}\n")))
+
+(define-skeleton latex-brief-article-skeleton
+  "Inserts a LaTeX skeleton for a brief article."
+  "Title: "
+  "\\documentclass[11pt]{article}\n"
+  "\\usepackage{geometry}                % See geometry.pdf to learn the\n"
+  "                                     % layout options. There are lots.\n"
+  "\\geometry{letterpaper} \n"
+  "% \\geometry{landscape} % Activate for for rotated page geometry\n"
+  "% \\usepackage[parfill]{parskip} % Activate to begin paragraphs with an\n"
+  "                                % empty line rather than an indent\n"
+  "\\usepackage{graphicx}\n"
+  "\\usepackage{amssymb}\n"
+  "\\usepackage{epstopdf}\n"
+  "\\usepackage{pdfsync}\n"
+  "\\usepackage{shortcuts}\n"
+  "\n"
+  "\\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}\n"
+  "\n"
+  "\\title{"str | "Brief Article""}\n"
+  "\\author{J.T. Halbert}\n"
+  "% \\date{} % Activate to display a given date or no date\n"
+  "\n"
+  "\\begin{document}\n"
+  "\\maketitle\n"
+  "%\\section{}\n"
+  "%\\subsection{}\n"
+  "\n"
+  > _ "\n"
+  "\n"
+  "\\end{document}\n")
+
+(define-skeleton latex-AMS-article-skeleton
+  "Inserts a AMS LaTeX skeleton for an article."
+  nil
+  "\\documentclass[10pt]{amsart}\n"
+  "\\usepackage{amssymb,latexsym}\n"
+  "\\usepackage{graphicx}\n"
+  "\\usepackage{shortcuts}\n"
+  "\\usepackage{pdfsync}\n"
+  "\\usepackage[mathscr]{eucal}\n"
+  "\\thispagestyle{empty}\n"
+  "\n"
+  "%%% PAGE DIMENSIONS\n"
+  "\\usepackage{geometry} % to change the page dimensions\n"
+  "\\geometry{margin=0.75in} % for example, change the margins to 2 inches all round\n"
+  "%\\geometry{landscape} % set up the page for landscape\n"
+  "% read geometry.pdf for detailed page layout information\n"
+  "\n"
+  "\\newtheorem{theorem}{Theorem}\n"
+  "\\newtheorem{corollary}[theorem]{Corollary}\n"
+  "\\newtheorem{definition}{Definition}\n"
+  "\\newtheorem{lemma}{Lemma}\n"
+  "\\theoremstyle{remark}\n"
+  "\\newtheorem{remark}{Remark}\n"
+  "\n"
+  "\\begin{document}\n"
+  "\\title[short-title]{long title}\n"
+  "\\author{J.T. Halbert}\n"
+  "\\address{Mathematics Department\\\\\n"
+  "        University of Maryland\\\\\n"
+  "        College Park, MD 20742}\n"
+  "\\email{halbert@math.umd.edu}\n"
+  "\\urladdr{http://www.math.umd.edu/$\\sim$halbert}\n"
+  "\\thanks{This work was done ...}\n"
+  "\\date{\\today}\n"
+  "\\begin{abstract}\n"
+  > _ \n 
+  "\\end{abstract}\n"
+  "\\maketitle\n"
+  "\n"
+  "\n"
+  "\\bibliographystyle{amsplain}\n"
+  "\\bibliography{bib-database}\n"
+  "\\end{document}\n")
+
+(define-skeleton latex-foils-skeleton
+  "Inserts a template for foiltex slides."
+  nil
+  "\\documentclass{foils}\n"
+  "\\usepackage{amssymb, amsmath}\n"
+  "\\usepackage{graphicx}\n"
+  "\\usepackage[mathscr]{eucal}\n"
+  "\\usepackage{pb-diagram}\n"
+  "\\usepackage{shortcuts}\n"
+  "\\usepackage{pdfsync}\n"
+  "\\usepackage{color}\n"
+  "\\pagenumbering{arabic}\n"
+  "\n"
+  "\\title{"_"}\n"
+  "\\author{J.T. Halbert}\n"
+  "\\date{\\today}\n"
+  "\n"
+  "\\MyLogo{-- Short Talk Title --}\n"
+  "%\\Restriction{}\n"
+  "%\\leftfooter{} \n"
+  "%\\rightfooter{}\n"
+  "%\\leftheader{J.T. Halbert}\n"
+  "%\\rightheader{\\foiltexdate}\n"
+  "\n"
+  "\\begin{document}\n"
+  "\\maketitle\n"
+  "\\foilhead{}                     %References\n"
+  "\\nocite{chorin2002}\n"
+  "\\nocite{zwanzig:1960}\n"
+  "\\nocite{zwanzig:1961}\n"
+  "\n"
+  "\\bibliographystyle{amsplain}\n"
+  "\\bibliography{research}\n"
+  "\\foilhead{Overview}\n"
+  "\\begin{itemize}\n"
+  "\\item \n"
+  "\\end{itemize}\n"
+  "\n"
+  "\\rotatefoilhead{}               %landscape slide\n"
+  "\n"
+  "\\rotatefoilhead[-1in]{}         %landscape with adjustment\n"
+  "\n"
+  "\\begin{center}\n"
+  "  \\Large{The End.}\n"
+  "\\end{center}\n"
+  "\\end{document}\n")
+
+(define-skeleton elisp-skeleton
+  "Inserts a elisp skeleton."
+  nil
+  ";;; " (file-name-nondirectory buffer-file-name) "--- \n"
+  ";;\n"
+  ";;\n"
+  ";;\n"
+  ";; Author: " (user-full-name) "\n"
+  ";;\n"
+  ";;; Commentary:\n"
+  ";; "_"\n"
+  ";; \n"
+  ";;; Code:\n")
+
+(define-skeleton c-code-skeleton
+  "Inserts a skeleton for c code."
+  nil
+  "/* "(file-name-nondirectory buffer-file-name)" */\n"
+  "/* Author: "(user-full-name)" */\n"
+  "/* Time-stamp: \" \" */\n"
+  "\n"
+  "/* Commentary:\n"
+  "\n"
+  "   "_" */\n")
+
+(define-skeleton latex-simple-text-skeleton
+  "inserts a simple blank page skeleton."
+  nil
+  "\\documentclass{article}\n"
+  "\\usepackage{geometry}\n"
+  "\\geometry{margin=1in}\n"
+  "\\usepackage{graphicx}\n"
+  "\\usepackage{shortcuts}\n"
+  "\\usepackage{pdfsync}\n"
+  "\\usepackage{amssymb, amsmath, latexsym}\n"
+  "\\setlength{\\parskip}{2.3ex}            % vertical space between paragraphs\n"
+  "\\setlength{\\parindent}{0in}            % amount of indentation of paragraph\n"
+  "%this package allows for hyperlinks within the pdf document\n"
+  "\\usepackage[colorlinks=true, linkcolor=blue,pdfstartview=FitV,\n"
+  "citecolor=gray40, urlcolor=blue]{hyperref}\n"
+  "\n"
+  "\\begin{document}\n"
+  "\\thispagestyle{empty}\n"
+  "\\begin{center}\n"
+  "  \\large{\\textbf{Title}}\n"
+  "\\end{center}\n"
+  "\n"
+  "An example of a\n"
+  "\\href{http://www.math.umd.edu/research/spotlight}{hyperlink} is\n"
+  "given here.\n"
+  _"\n"
+  "\\end{document}\n")
+
+(define-skeleton elisp-separator-skeleton
+  "Inserts a separator for elisp file."
+  nil
+  ";; -----------------------------------------------------------------------------\n"
+  ";; "_"\n"
+  ";; -----------------------------------------------------------------------------\n"
+  )
+
+
+;; -----------------------------------------------------------------------------
+;; Macros
+;; -----------------------------------------------------------------------------
+
+;; This macro finds the next <h3></h3> tag on a line by itself and
+;; then takes the last name and then tags it as a name.  for instance
+;; see spotlight/talks.abstracts.content
+(fset 'nameh3tags (lambda (&optional arg) "Keyboard macro."
+   (interactive "p") (kmacro-exec-ring-item (quote ([19 60 104 51 5
+   134217826 2 2 134217826 67108896 134217830 134217847 1 6 6 6 6 3 3
+   110 25 return 134217830 6 67108896 67108896 19 60 2 134217847 24 11
+   134217846 134217826 67108911 24 11 134217826 2 2 25 5 14] 0 "%d"))
+   arg)))
+
