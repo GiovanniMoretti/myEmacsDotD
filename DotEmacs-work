@@ -246,7 +246,21 @@
 
 
 ; (add-hook 'org-mode-hook 'flyspell-mode)
- (add-hook 'org-mode-hook 'visual-line-mode)
+
+; Line wrapping on for .ORG & .TEX files
+(add-hook 'org-mode-hook 'visual-line-mode)
+(add-hook 'LaTex-mode-hook 'visual-line-mode)
+
+; From http://www.emacswiki.org/emacs/AUCTeX
+    (add-hook 'LaTeX-mode-hook 'auto-fill-mode)
+    (add-hook 'LaTeX-mode-hook 'flyspell-mode)
+    (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
+
+    (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
+    (setq reftex-plug-into-AUCTeX t)
+
+;(setq TeX-newline-function 'newline-and-indent)
+    (add-hook 'LaTeX-mode-hook 'TeX-PDF-mode) 
 
 ; SMerge - see notes in EmacsNotes.org
 

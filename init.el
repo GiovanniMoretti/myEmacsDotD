@@ -38,6 +38,54 @@
 ;     (color-theme-initialize)
 ;     (color-theme-hober)))
 
+; Using BCrypt to handle encrypted files
+
+(defun open-encrypted-file (fname)
+  (interactive "FFind file: \n")
+  (let ((buf (create-file-buffer fname)))
+    (shell-command
+     (concat "echo " (read-passwd "Decrypt password: ")"|bcrypt -o " fname)
+     buf)
+    (set-buffer buf)
+    (kill-line)(kill-line)
+    (toggle-read-only)
+    (not-modified))
+  )
+;;================================================================================
+;; Remove the large amount of vertical padding in exported HTML tables
+(setq org-export-html-table-tag "<table border=\"2\" cellspacing=\"0\" cellpadding=\"2\" frame=\"hsides\">")
+;;================================================================================
+;; Image support in orgmode using iimage
+;; from http://orgmode.org/worg/org-configs/org-config-examples.php#sec-2_2
+(load "iimage")
+
+(load-file "~/Dropbox/Emacs-config/php-mode.el")  ; PHP MODE
+(require 'php-mode)
+
+(autoload 'iimage-mode         "iimage" "Support Inline image minor mode." t)
+(autoload 'turn-on-iimage-mode "iimage" "Turn on Inline image minor mode." t)
+
+(add-to-list 'iimage-mode-image-regex-alist
+             (cons (concat "\\[\\[file:\\(~?" iimage-mode-image-filename-regex
+                           "\\)\\]")  1))
+
+(defun org-toggle-iimage-in-org ()
+  "display images in your org file"
+  (interactive)
+  (if (face-underline-p 'org-link)
+      (set-face-underline-p 'org-link nil)
+      (set-face-underline-p 'org-link t))
+  (iimage-mode))
+;;========================================================= =======================
+
+
+
+;;===========================================================================
+;; Activate a RECENT FILES list (from http://www.emacswiki.org/emacs/EmacsNiftyTricks)
+(recentf-mode 1)
+
+(setq iimage-mode-image-search-path (cons "~/Dropbox/org/" 
+                                          iimage-mode-image-search-path))
 
 (custom-set-variables
       ;; custom-set-variables was added by Custom.
@@ -54,8 +102,6 @@
      '(org-mobile-inbox-for-pull "~/Dropbox/org/flagged.org")
 
      '(savehist-mode t nil (savehist))
-     '(weblogger-config-alist (quote (("default" "http://www.reflections.co.nanni" "" "1")) 
-					z/wordpress/xmlrpc\.php " " Giov))
 )
 
 (custom-set-faces
