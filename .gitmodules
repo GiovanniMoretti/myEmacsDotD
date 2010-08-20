@@ -7,3 +7,6 @@
 [submodule "org2blog"]
 	path = org2blog
 	url = http://github.com/punchagan/org2blog.git
+[submodule "Pymacs"]
+	path = Pymacs
+	url = git://github.com/pinard/Pymacs.git
