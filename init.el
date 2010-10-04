@@ -212,8 +212,20 @@
 
 ;(require 'org-babel-init)
 
+
+
 (load-file "~/Dropbox/Emacs-config/orgmode/lisp/org-exp-blocks.el")
 (require 'org-exp-blocks)
+
+; Complements of JamesH
+(org-babel-do-load-languages
+      'org-babel-load-languages
+      '((emacs-lisp . t)
+        (R . t)
+        (python . t)))
+
+;; I don't want to be prompted on every code block evaluation
+(setq org-confirm-babel-evaluate nil)
 
 ;===========================================================================
 ; Define Giovanni's overriding KEYBOARD SHORTCUTS as global commands
