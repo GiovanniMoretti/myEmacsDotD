@@ -59,8 +59,8 @@
 ;; from http://orgmode.org/worg/org-configs/org-config-examples.php#sec-2_2
 (load "iimage")
 
-(load-file "~/Dropbox/Emacs-config/php-mode.el")  ; PHP MODE
-(require 'php-mode)
+; XXXX ERRORS ON Linux on Main home PC (load-file "~/Dropbox/Emacs-config/php-mode.el")  ; PHP MODE
+; (require 'php-mode)
 
 (autoload 'iimage-mode         "iimage" "Support Inline image minor mode." t)
 (autoload 'turn-on-iimage-mode "iimage" "Turn on Inline image minor mode." t)
@@ -210,13 +210,6 @@
 ;     (expand-file-name "~/.emacs.d/elpa/package.el"))
 ;  (package-initialize))
 
-;(require 'org-babel-init)
-
-
-
-(load-file "~/Dropbox/Emacs-config/orgmode/lisp/org-exp-blocks.el")
-(require 'org-exp-blocks)
-
 ; Complements of JamesH
 (org-babel-do-load-languages
       'org-babel-load-languages
@@ -313,3 +306,73 @@
     ad-do-it))
 
 (global-set-key "\C-v" 'scroll-up)
+
+; Python Auto-complete mode
+
+(setq load-path (cons "~/.emacs.d/Pymacs/" load-path))
+(require  'python)
+
+;; From http://jesselegg.com/archives/2010/02/25/emacs-python-programmers-part-1
+
+;;; Electric Pairs
+(add-hook 'python-mode-hook
+     (lambda ()
+      (define-key python-mode-map "\"" 'electric-pair)
+      (define-key python-mode-map "\'" 'electric-pair)
+      (define-key python-mode-map "(" 'electric-pair)
+      (define-key python-mode-map "[" 'electric-pair)
+      (define-key python-mode-map "{" 'electric-pair)))
+(defun electric-pair ()
+  "Insert character pair without surrounding spaces"
+  (interactive)
+  (let (parens-require-spaces)
+    (insert-pair)))
+
+;;; bind RET to py-newline-and-indent
+(add-hook 'python-mode-hook '(lambda () 
+     (define-key python-mode-map "\C-m" 'newline-and-indent)))
+
+
+
+;;; Electric Pairs
+(add-hook 'python-mode-hook
+     (lambda ()
+      (define-key python-mode-map "\"" 'electric-pair)
+      (define-key python-mode-map "\'" 'electric-pair)
+      (define-key python-mode-map "(" 'electric-pair)
+      (define-key python-mode-map "[" 'electric-pair)
+      (define-key python-mode-map "{" 'electric-pair)))
+(defun electric-pair ()
+  "Insert character pair without sournding spaces"
+  (interactive)
+  (let (parens-require-spaces)
+    (insert-pair)))
+
+; Another feature I like that is not enabled by default in python.el
+; is binding the RET key to newline-and-indent (or
+; py-newline-and-indent in python-mode.el). This automatically indents
+; newlines and attempts to locate the cursor at the appropriate,
+; whitespace-sensitive location whenever you press Return. Some people
+; may prefer to allow the cursor to locate at the beginning of the
+; line and indent themselves with TAB, which is totally cool, but I
+; find it somewhat tedious. My Elisp to enable this functionality is
+; below:
+
+;;; bind RET to py-newline-and-indent
+(add-hook 'python-mode-hook '(lambda () 
+     (define-key python-mode-map "\C-m" 'newline-and-indent)))
+
+; Lastly, and by far most importantly, you need to take care of
+; tabs. Since Python features significant whitespace, a broken tabbing
+; setup can cause all kinds of problems. In general, you want to make
+; sure that indent-tabs-mode is disabled and that your indentation
+; level is set to 4 spaces (per PEP 8).
+
+; Set this in your .emacs configuration like so:
+
+(setq-default indent-tabs-mode nil)
+
+(setq-default tab-width 4)
+
+(setq-default py-indent-offset 4)
+
