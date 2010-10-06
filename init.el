@@ -23,13 +23,13 @@
 ;                                          iimage-mode-image-search-path))
 
 ;; Add in additional downloaded packages
-(setq load-path (cons "~/Dropbox/Emacs-config/" load-path))
+(setq load-path (cons "~/.emacs.d/" load-path))
 
 ; And the latest version of orgmode
-(setq load-path (cons "~/Dropbox/Emacs-config/orgmode/lisp/" load-path))
+(setq load-path (cons "~/.emacs.d/orgmode/lisp/" load-path))
 
 ; And Color-Theme
-;(setq load-path (cons "~/Dropbox/Emacs-config/color-theme-6.6.0/" load-path))
+;(setq load-path (cons "~/.emacs.d/color-theme-6.6.0/" load-path))
 
 ;;(add-to-list 'load-path "/path/to/color-theme.el/file")
 ;(require 'color-theme)
@@ -59,7 +59,7 @@
 ;; from http://orgmode.org/worg/org-configs/org-config-examples.php#sec-2_2
 (load "iimage")
 
-(load-file "~/Dropbox/Emacs-config/php-mode.el")  ; PHP MODE
+(load-file "~/.emacs.d/php-mode.el")  ; PHP MODE
 (require 'php-mode)
 
 (autoload 'iimage-mode         "iimage" "Support Inline image minor mode." t)
@@ -210,14 +210,8 @@
 ;     (expand-file-name "~/.emacs.d/elpa/package.el"))
 ;  (package-initialize))
 
-;(require 'org-babel-init)
 
-
-
-(load-file "~/Dropbox/Emacs-config/orgmode/lisp/org-exp-blocks.el")
-(require 'org-exp-blocks)
-
-; Complements of JamesH
+; Babel Setup - complements of JamesH
 (org-babel-do-load-languages
       'org-babel-load-languages
       '((emacs-lisp . t)
