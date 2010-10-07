@@ -12,4 +12,4 @@
 	url = git://github.com/pinard/Pymacs.git
 [submodule "virtualenv"]
 	path = virtualenv
-	url = http://github.com/aculich/virtualenv.el.git
+	url = git://github.com/aculich/virtualenv.el.git
