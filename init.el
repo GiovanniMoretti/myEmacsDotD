@@ -22,6 +22,8 @@
 ;(setq iimage-mode-image-search-path (cons "~/Dropbox/org/" 
 ;                                          iimage-mode-image-search-path))
 
+;;===============================================================================
+
 ;; Add in additional downloaded packages
 (setq load-path (cons "~/.emacs.d/" load-path))
 
@@ -88,18 +90,18 @@
                                           iimage-mode-image-search-path))
 
 (custom-set-variables
-      ;; custom-set-variables was added by Custom.
-      ;; If you edit it by hand, you could mess it up, so be careful.
-      ;; Your init file should contain only one such instance.
-      ;; If there is more than one, they won't work right.
-     '(inhibit-startup-screen t)
-     '(org-default-notes-file "~/Dropbox/org/notes.org")
-     '(org-fontify-whole-heading-line t)
-     '(org-hide-leading-stars t)
-     '(org-mobile-directory "~/Dropbox/MobileOrg")
+  ;; custom-set-variables was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ '(inhibit-startup-screen t)
+ '(org-default-notes-file "~/Dropbox/org/notes.org")
+ '(org-fontify-whole-heading-line t)
+ '(org-hide-leading-stars t)
+ '(org-mobile-directory "~/Dropbox/MobileOrg")
 
      ; Set to the name of the file where new notes will be stored
-     '(org-mobile-inbox-for-pull "~/Dropbox/org/flagged.org")
+ '(org-mobile-inbox-for-pull "~/Dropbox/org/flagged.org")
 
      '(savehist-mode t nil (savehist))
 )
@@ -378,3 +380,15 @@
 
 (setq-default py-indent-offset 4)
 
+;;===============================================================================
+; Use the Listings package in Latex for better output
+
+(require 'org-latex)
+
+(setq org-export-latex-listings t)
+
+;; if you want fontified source code, then you must include the `listings' package
+(add-to-list 'org-export-latex-packages-alist '("" "listings"))
+
+;; if you want colored source code, then you need to include the `xcolor' package
+(add-to-list 'org-export-latex-packages-alist '("" "xcolor"))
